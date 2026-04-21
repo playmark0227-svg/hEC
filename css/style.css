@@ -506,6 +506,7 @@ input, select, textarea { font-family: inherit; font-size: 15px; }
 
 /* ==== Modal ==== */
 .modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; }
+.modal[hidden], .cart-drawer[hidden] { display: none !important; }
 .modal-backdrop { position: absolute; inset: 0; background: rgba(10,35,48,.6); backdrop-filter: blur(4px); animation: fade .2s; }
 .modal-panel {
   position: relative;
