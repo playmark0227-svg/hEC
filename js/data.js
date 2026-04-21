@@ -7,8 +7,13 @@ const STORAGE_KEYS = {
   PRODUCTS: 'umiichi_products',
   CART: 'umiichi_cart',
   ORDERS: 'umiichi_orders',
-  SHOP_INFO: 'umiichi_shop_info'
+  SHOP_INFO: 'umiichi_shop_info',
+  DATA_VERSION: 'umiichi_data_version'
 };
+
+// サンプルデータのスキーマが変わった時にバージョンを上げる
+// → ユーザーのlocalStorageが古い場合は商品データのみ自動で最新化
+const DATA_VERSION = 2;
 
 // カテゴリ定義
 const CATEGORIES = [
@@ -196,8 +201,17 @@ const DEFAULT_SHOP_INFO = {
 const DataStore = {
   // 初期化 - サンプルデータ投入
   init() {
-    if (!localStorage.getItem(STORAGE_KEYS.PRODUCTS)) {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(SAMPLE_PRODUCTS));
+    const savedVersion = Number(localStorage.getItem(STORAGE_KEYS.DATA_VERSION) || 0);
+    const stale = savedVersion < DATA_VERSION;
+
+    if (!localStorage.getItem(STORAGE_KEYS.PRODUCTS) || stale) {
+      // 既存の商品データが旧スキーマ（Unsplash URL等）の場合、管理者編集分は保持しつつ
+      // サンプル商品IDのみ最新のSVG画像で上書きする
+      const existing = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS) || '[]');
+      const sampleIds = new Set(SAMPLE_PRODUCTS.map(p => p.id));
+      const customProducts = existing.filter(p => !sampleIds.has(p.id));
+      const merged = [...SAMPLE_PRODUCTS, ...customProducts];
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(merged));
     }
     if (!localStorage.getItem(STORAGE_KEYS.SHOP_INFO)) {
       localStorage.setItem(STORAGE_KEYS.SHOP_INFO, JSON.stringify(DEFAULT_SHOP_INFO));
@@ -208,6 +222,7 @@ const DataStore = {
     if (!localStorage.getItem(STORAGE_KEYS.ORDERS)) {
       localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify([]));
     }
+    localStorage.setItem(STORAGE_KEYS.DATA_VERSION, String(DATA_VERSION));
   },
 
   // 商品取得
