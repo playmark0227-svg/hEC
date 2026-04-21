@@ -273,18 +273,8 @@ function removeItem(pid) {
 function checkout() {
   const cart = DataStore.getCart();
   if (!cart.length) return;
-  const items = cart.map(c => {
-    const p = DataStore.getProduct(c.productId);
-    return { productId: c.productId, name: p.name, price: p.price, qty: c.qty };
-  });
-  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const shipping = subtotal >= 5000 ? 0 : 980;
-  DataStore.createOrder({ items, subtotal, shipping, total: subtotal + shipping });
-  DataStore.clearCart();
-  renderCart();
-  updateCartBadge();
   closeCart();
-  showToast('✅ ご注文ありがとうございました！', 3000);
+  location.href = 'checkout.html';
 }
 
 function updateCartBadge() {

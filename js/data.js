@@ -12,11 +12,57 @@ const STORAGE_KEYS = {
 
 // カテゴリ定義
 const CATEGORIES = [
-  { id: 'scallop', name: 'ホタテ', emoji: '🐚', color: '#f5b971' },
-  { id: 'crab',    name: 'カニ',   emoji: '🦀', color: '#e76f51' },
-  { id: 'octopus', name: 'タコ',   emoji: '🐙', color: '#c77dff' },
-  { id: 'squid',   name: 'イカ',   emoji: '🦑', color: '#6a9cd1' }
+  { id: 'scallop', name: 'ホタテ', emoji: '🐚', color: '#f5b971', bgFrom: '#fff6e6', bgTo: '#f5b971' },
+  { id: 'crab',    name: 'カニ',   emoji: '🦀', color: '#e76f51', bgFrom: '#fde6dd', bgTo: '#e76f51' },
+  { id: 'octopus', name: 'タコ',   emoji: '🐙', color: '#c77dff', bgFrom: '#f3e6ff', bgTo: '#9d4edd' },
+  { id: 'squid',   name: 'イカ',   emoji: '🦑', color: '#6a9cd1', bgFrom: '#e3edf7', bgTo: '#3a6fa0' }
 ];
+
+// カテゴリごとの商品画像生成（SVG data URI）
+// ラベル・波・光沢・エンブレムを重ねて「意図したデザイン」に見える商品サムネイル
+function generateProductImage(category, variant = 1, label = '') {
+  const cat = CATEGORIES.find(c => c.id === category) || CATEGORIES[0];
+  const seed = (variant * 37 + category.length) % 360;
+  const hueShift = variant % 2 === 0 ? 0 : -8;
+  const svg = `
+<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'>
+  <defs>
+    <linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'>
+      <stop offset='0%' stop-color='${cat.bgFrom}'/>
+      <stop offset='100%' stop-color='${cat.bgTo}'/>
+    </linearGradient>
+    <radialGradient id='glow' cx='50%' cy='35%' r='55%'>
+      <stop offset='0%' stop-color='rgba(255,255,255,.55)'/>
+      <stop offset='100%' stop-color='rgba(255,255,255,0)'/>
+    </radialGradient>
+    <pattern id='dots' width='28' height='28' patternUnits='userSpaceOnUse'>
+      <circle cx='2' cy='2' r='1.2' fill='rgba(255,255,255,.25)'/>
+    </pattern>
+  </defs>
+  <rect width='600' height='600' fill='url(#bg)'/>
+  <rect width='600' height='600' fill='url(#dots)'/>
+  <rect width='600' height='600' fill='url(#glow)'/>
+
+  <path d='M0 ${420 + variant * 10} C 150 ${380 + variant * 5}, 300 ${460 - variant * 8}, 450 ${400 + variant * 6} S 600 ${430 + variant * 4}, 600 ${430 + variant * 4} L 600 600 L 0 600 Z'
+        fill='rgba(255,255,255,.22)'/>
+  <path d='M0 ${480} C 150 ${440}, 300 ${520}, 450 ${470} S 600 ${490}, 600 ${490} L 600 600 L 0 600 Z'
+        fill='rgba(10,35,48,.08)'/>
+
+  <circle cx='300' cy='260' r='150' fill='rgba(255,255,255,.4)'/>
+  <circle cx='300' cy='260' r='140' fill='rgba(255,255,255,.55)' stroke='rgba(255,255,255,.8)' stroke-width='3'/>
+  <text x='300' y='320' font-size='180' text-anchor='middle' font-family='Apple Color Emoji,Segoe UI Emoji,sans-serif'>${cat.emoji}</text>
+
+  <g transform='translate(40, 40)'>
+    <rect x='0' y='0' rx='8' ry='8' width='120' height='30' fill='rgba(10,35,48,.85)'/>
+    <text x='60' y='20' font-size='14' text-anchor='middle' fill='#fff' font-family='system-ui,sans-serif' font-weight='700' letter-spacing='2'>UMIICHI</text>
+  </g>
+  ${label ? `<g transform='translate(300, 540)'>
+    <rect x='-140' y='-22' rx='14' ry='14' width='280' height='38' fill='rgba(255,255,255,.9)'/>
+    <text x='0' y='4' font-size='16' text-anchor='middle' fill='${cat.bgTo}' font-family='system-ui,sans-serif' font-weight='700'>${label}</text>
+  </g>` : ''}
+</svg>`.trim().replace(/\s+/g, ' ').replace(/> </g, '><');
+  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+}
 
 // サンプル商品（初回のみ登録される）
 const SAMPLE_PRODUCTS = [
@@ -29,7 +75,7 @@ const SAMPLE_PRODUCTS = [
     stock: 24,
     description: '北海道オホーツク海の冷たい海で育った特大サイズのホタテ貝柱です。甘みと旨みがぎゅっと詰まった逸品。お刺身はもちろん、バター焼きやフライにも最適。活〆後、急速冷凍で鮮度そのままお届けします。',
     tags: ['冷凍', '送料無料', '北海道産', '特大'],
-    image: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=800',
+    image: generateProductImage('scallop', 1, '特大 1kg / 活〆冷凍'),
     badge: 'BEST',
     published: true,
     createdAt: Date.now() - 86400000 * 5
@@ -43,7 +89,7 @@ const SAMPLE_PRODUCTS = [
     stock: 15,
     description: '旨みが凝縮されたボイルホタテ。解凍するだけですぐお召し上がりいただけます。サラダや和え物、パスタの具材にも。',
     tags: ['冷凍', '調理済み', '国産'],
-    image: 'https://images.unsplash.com/photo-1559737558-2f5a35f4523b?w=800',
+    image: generateProductImage('scallop', 2, 'ボイル済 500g'),
     badge: null,
     published: true,
     createdAt: Date.now() - 86400000 * 10
@@ -57,7 +103,7 @@ const SAMPLE_PRODUCTS = [
     stock: 8,
     description: 'ロシア産・特大サイズのタラバガニ脚。身入り抜群で、プリッとした食感と濃厚な甘みが口いっぱいに広がります。ボイル済みなので解凍してそのままお召し上がりいただけます。',
     tags: ['冷凍', '送料無料', 'ボイル済', 'ギフト'],
-    image: 'https://images.unsplash.com/photo-1606850246029-dd00bd451c6c?w=800',
+    image: generateProductImage('crab', 1, 'タラバガニ脚 1.2kg'),
     badge: 'SALE',
     published: true,
     createdAt: Date.now() - 86400000 * 3
@@ -71,7 +117,7 @@ const SAMPLE_PRODUCTS = [
     stock: 12,
     description: '日本海で獲れた活ズワイガニを船上で瞬間ボイル。身のしまりと上品な甘みが特徴です。贈答用化粧箱入り。',
     tags: ['冷凍', 'ボイル済', '日本海産', 'ギフト'],
-    image: 'https://images.unsplash.com/photo-1625631892672-7dc1c66cfbb6?w=800',
+    image: generateProductImage('crab', 2, 'ズワイガニ姿 800g'),
     badge: 'NEW',
     published: true,
     createdAt: Date.now() - 86400000 * 1
@@ -85,7 +131,7 @@ const SAMPLE_PRODUCTS = [
     stock: 10,
     description: '激しい潮流で育った明石の真タコは、足が太く、コリコリとした食感と凝縮された旨みが自慢。お刺身、タコ飯、唐揚げなど幅広くお使いいただけます。',
     tags: ['冷凍', '国産', '明石産'],
-    image: 'https://images.unsplash.com/photo-1544476915-ed1370594142?w=800',
+    image: generateProductImage('octopus', 1, '真タコ 一杯 800g'),
     badge: null,
     published: true,
     createdAt: Date.now() - 86400000 * 7
@@ -99,7 +145,7 @@ const SAMPLE_PRODUCTS = [
     stock: 30,
     description: '解凍するだけで刺身として召し上がれる便利なスライスパック。コリコリ食感、ほんのりとした甘み。',
     tags: ['冷凍', '刺身用', 'お手軽'],
-    image: 'https://images.unsplash.com/photo-1572916118970-fec53de22848?w=800',
+    image: generateProductImage('octopus', 2, '刺身用スライス 300g'),
     badge: 'SALE',
     published: true,
     createdAt: Date.now() - 86400000 * 2
@@ -113,7 +159,7 @@ const SAMPLE_PRODUCTS = [
     stock: 18,
     description: '函館港水揚げ直後に船上で急速冷凍。透明度抜群の新鮮な真イカを刺身用にお届けします。下処理済みで調理カンタン。',
     tags: ['冷凍', '刺身用', '函館産', '下処理済'],
-    image: 'https://images.unsplash.com/photo-1517959105821-eaf2591984ca?w=800',
+    image: generateProductImage('squid', 1, '真イカ 5杯セット'),
     badge: null,
     published: true,
     createdAt: Date.now() - 86400000 * 4
@@ -127,7 +173,7 @@ const SAMPLE_PRODUCTS = [
     stock: 25,
     description: '昔ながらの製法で丁寧に作った一夜干し。軽く炙るだけで、凝縮された旨みと磯の香りが口いっぱいに広がります。',
     tags: ['常温', '干物', '伝統製法'],
-    image: 'https://images.unsplash.com/photo-1567083593317-a9bb9abd0f43?w=800',
+    image: generateProductImage('squid', 2, '一夜干し 5枚セット'),
     badge: null,
     published: true,
     createdAt: Date.now() - 86400000 * 8

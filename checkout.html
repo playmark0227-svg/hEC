@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ご注文手続き | 海市 -UMIICHI-</title>
+  <meta name="description" content="海市のお買い物かごのご注文手続き。配送先、お支払い方法を入力してご注文を確定ください。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/checkout.css" />
+</head>
+<body>
+
+  <!-- ======= MINIMAL HEADER ======= -->
+  <header class="checkout-header">
+    <div class="checkout-header-inner">
+      <a class="logo" href="index.html" aria-label="海市ホーム">
+        <span class="logo-mark">🌊</span>
+        <span class="logo-text">
+          <b>海市</b><small>UMIICHI</small>
+        </span>
+      </a>
+      <div class="checkout-secure">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>安全なSSL通信</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======= STEPPER ======= -->
+  <div class="checkout-stepper-wrap">
+    <ol class="checkout-stepper" id="stepper">
+      <li class="step active" data-step="1"><span class="step-num">1</span><span class="step-label">配送先</span></li>
+      <li class="step" data-step="2"><span class="step-num">2</span><span class="step-label">お支払い</span></li>
+      <li class="step" data-step="3"><span class="step-num">3</span><span class="step-label">ご確認</span></li>
+      <li class="step" data-step="4"><span class="step-num">4</span><span class="step-label">完了</span></li>
+    </ol>
+  </div>
+
+  <!-- ======= MAIN ======= -->
+  <main class="checkout-main">
+    <div class="checkout-container">
+
+      <!-- Left: Form panels -->
+      <section class="checkout-body">
+
+        <!-- STEP 1: Shipping -->
+        <div class="panel" data-panel="1">
+          <h2 class="panel-title">
+            <span class="panel-num">1</span>配送先のご入力
+          </h2>
+          <p class="panel-desc">お届け先のご住所をご入力ください。*は必須項目です。</p>
+
+          <form id="shippingForm" class="form-grid" onsubmit="event.preventDefault(); goStep(2);">
+            <div class="form-row">
+              <label class="form-field">
+                <span class="form-label">お名前 <em>*</em></span>
+                <input type="text" name="name" required autocomplete="name" placeholder="海市 太郎">
+              </label>
+              <label class="form-field">
+                <span class="form-label">フリガナ <em>*</em></span>
+                <input type="text" name="nameKana" required autocomplete="off" placeholder="ウミイチ タロウ">
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label class="form-field form-field-grow">
+                <span class="form-label">メールアドレス <em>*</em></span>
+                <input type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+              </label>
+              <label class="form-field">
+                <span class="form-label">電話番号 <em>*</em></span>
+                <input type="tel" name="phone" required autocomplete="tel" placeholder="090-0000-0000" pattern="[\d\-\s]+">
+              </label>
+            </div>
+
+            <label class="form-field">
+              <span class="form-label">郵便番号 <em>*</em></span>
+              <div class="zip-row">
+                <input type="text" name="zip" required autocomplete="postal-code" placeholder="000-0000" pattern="[\d\-]+" maxlength="8" id="zipInput">
+                <button type="button" class="btn-ghost btn-sm" onclick="lookupZip()">住所検索</button>
+              </div>
+            </label>
+
+            <div class="form-row">
+              <label class="form-field">
+                <span class="form-label">都道府県 <em>*</em></span>
+                <select name="pref" required autocomplete="address-level1">
+                  <option value="">選択してください</option>
+                  <option>北海道</option><option>青森県</option><option>岩手県</option><option>宮城県</option>
+                  <option>秋田県</option><option>山形県</option><option>福島県</option><option>茨城県</option>
+                  <option>栃木県</option><option>群馬県</option><option>埼玉県</option><option>千葉県</option>
+                  <option>東京都</option><option>神奈川県</option><option>新潟県</option><option>富山県</option>
+                  <option>石川県</option><option>福井県</option><option>山梨県</option><option>長野県</option>
+                  <option>岐阜県</option><option>静岡県</option><option>愛知県</option><option>三重県</option>
+                  <option>滋賀県</option><option>京都府</option><option>大阪府</option><option>兵庫県</option>
+                  <option>奈良県</option><option>和歌山県</option><option>鳥取県</option><option>島根県</option>
+                  <option>岡山県</option><option>広島県</option><option>山口県</option><option>徳島県</option>
+                  <option>香川県</option><option>愛媛県</option><option>高知県</option><option>福岡県</option>
+                  <option>佐賀県</option><option>長崎県</option><option>熊本県</option><option>大分県</option>
+                  <option>宮崎県</option><option>鹿児島県</option><option>沖縄県</option>
+                </select>
+              </label>
+              <label class="form-field form-field-grow">
+                <span class="form-label">市区町村 <em>*</em></span>
+                <input type="text" name="city" required autocomplete="address-level2" placeholder="紋別市">
+              </label>
+            </div>
+
+            <label class="form-field">
+              <span class="form-label">番地・建物名 <em>*</em></span>
+              <input type="text" name="address" required autocomplete="address-line1" placeholder="海辺町1-2-3 マンション海市 101号室">
+            </label>
+
+            <fieldset class="form-fieldset">
+              <legend>配送オプション</legend>
+              <label class="radio-card">
+                <input type="radio" name="delivery" value="standard" checked>
+                <div>
+                  <b>通常配送（クール便）</b>
+                  <small>最短翌々日お届け / ¥980（¥5,000以上で無料）</small>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="delivery" value="express">
+                <div>
+                  <b>お急ぎ便（クール便）<span class="chip">+¥500</span></b>
+                  <small>最短翌日お届け（一部地域を除く）</small>
+                </div>
+              </label>
+            </fieldset>
+
+            <label class="form-field">
+              <span class="form-label">配達希望日</span>
+              <input type="date" name="deliveryDate" id="deliveryDateInput">
+            </label>
+
+            <label class="form-field">
+              <span class="form-label">時間帯指定</span>
+              <select name="deliveryTime">
+                <option value="">指定なし</option>
+                <option>午前中</option>
+                <option>14:00 - 16:00</option>
+                <option>16:00 - 18:00</option>
+                <option>18:00 - 20:00</option>
+                <option>20:00 - 21:00</option>
+              </select>
+            </label>
+
+            <label class="form-field">
+              <span class="form-label">備考・ご要望</span>
+              <textarea name="note" rows="3" placeholder="熨斗やメッセージカードのご希望など"></textarea>
+            </label>
+
+            <div class="panel-actions">
+              <a href="index.html" class="btn-ghost">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                買い物を続ける
+              </a>
+              <button type="submit" class="btn-primary">
+                お支払い方法へ
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- STEP 2: Payment -->
+        <div class="panel" data-panel="2" hidden>
+          <h2 class="panel-title">
+            <span class="panel-num">2</span>お支払い方法
+          </h2>
+          <p class="panel-desc">ご希望のお支払い方法をお選びください。</p>
+
+          <form id="paymentForm" class="form-grid" onsubmit="event.preventDefault(); goStep(3);">
+            <fieldset class="form-fieldset">
+              <legend>お支払い方法</legend>
+              <label class="radio-card">
+                <input type="radio" name="payment" value="card" checked onchange="togglePaymentPanel()">
+                <div>
+                  <b>クレジットカード</b>
+                  <small>VISA / Mastercard / JCB / AMEX / Diners</small>
+                </div>
+                <div class="card-icons" aria-hidden="true">
+                  <span class="card-icon visa">VISA</span>
+                  <span class="card-icon mc">MC</span>
+                  <span class="card-icon jcb">JCB</span>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="payment" value="bank" onchange="togglePaymentPanel()">
+                <div>
+                  <b>銀行振込（前払い）</b>
+                  <small>ご入金確認後の発送となります</small>
+                </div>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="payment" value="cod" onchange="togglePaymentPanel()">
+                <div>
+                  <b>代金引換</b>
+                  <small>商品お届け時に配達員へお支払い / 手数料¥330</small>
+                </div>
+              </label>
+            </fieldset>
+
+            <div id="cardFields" class="card-fields">
+              <label class="form-field">
+                <span class="form-label">カード番号 <em>*</em></span>
+                <input type="text" name="cardNumber" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" id="cardNumberInput" oninput="formatCardNumber(event)">
+              </label>
+              <label class="form-field">
+                <span class="form-label">カード名義（半角英字） <em>*</em></span>
+                <input type="text" name="cardName" autocomplete="cc-name" placeholder="TARO UMIICHI" style="text-transform:uppercase">
+              </label>
+              <div class="form-row">
+                <label class="form-field">
+                  <span class="form-label">有効期限（MM/YY） <em>*</em></span>
+                  <input type="text" name="cardExp" autocomplete="cc-exp" placeholder="MM/YY" maxlength="5" oninput="formatCardExp(event)">
+                </label>
+                <label class="form-field">
+                  <span class="form-label">セキュリティコード <em>*</em></span>
+                  <input type="text" name="cardCvc" inputmode="numeric" autocomplete="cc-csc" placeholder="123" maxlength="4">
+                </label>
+              </div>
+              <p class="form-hint">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                ※デモサイトのためカード情報は保存されません
+              </p>
+            </div>
+
+            <fieldset class="form-fieldset">
+              <legend>お届け先と同じ請求先住所</legend>
+              <label class="check-row">
+                <input type="checkbox" name="sameAddress" checked>
+                <span>請求先住所は配送先と同じ</span>
+              </label>
+            </fieldset>
+
+            <fieldset class="form-fieldset">
+              <legend>ご利用規約</legend>
+              <label class="check-row">
+                <input type="checkbox" name="agreeTos" required>
+                <span><a href="#" onclick="event.preventDefault();alert('デモサイトのため省略')">利用規約</a>と<a href="#" onclick="event.preventDefault();alert('デモサイトのため省略')">プライバシーポリシー</a>に同意する</span>
+              </label>
+            </fieldset>
+
+            <div class="panel-actions">
+              <button type="button" class="btn-ghost" onclick="goStep(1)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                配送先に戻る
+              </button>
+              <button type="submit" class="btn-primary">
+                ご注文内容の確認へ
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- STEP 3: Review -->
+        <div class="panel" data-panel="3" hidden>
+          <h2 class="panel-title">
+            <span class="panel-num">3</span>ご注文内容のご確認
+          </h2>
+          <p class="panel-desc">下記の内容でよろしければ、注文確定ボタンを押してください。</p>
+
+          <div class="review-block">
+            <div class="review-head">
+              <h3>お届け先</h3>
+              <button type="button" class="link-btn" onclick="goStep(1)">変更</button>
+            </div>
+            <div id="reviewShipping" class="review-body"></div>
+          </div>
+
+          <div class="review-block">
+            <div class="review-head">
+              <h3>お支払い方法</h3>
+              <button type="button" class="link-btn" onclick="goStep(2)">変更</button>
+            </div>
+            <div id="reviewPayment" class="review-body"></div>
+          </div>
+
+          <div class="review-block">
+            <div class="review-head">
+              <h3>ご注文商品</h3>
+              <button type="button" class="link-btn" onclick="location.href='index.html'">変更</button>
+            </div>
+            <div id="reviewItems" class="review-items"></div>
+          </div>
+
+          <div class="panel-actions">
+            <button type="button" class="btn-ghost" onclick="goStep(2)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              お支払いに戻る
+            </button>
+            <button type="button" class="btn-primary btn-confirm" onclick="placeOrder()" id="placeOrderBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>注文を確定する</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 4: Complete -->
+        <div class="panel panel-complete" data-panel="4" hidden>
+          <div class="complete-icon">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="16 9 11 14 8 11"/>
+            </svg>
+          </div>
+          <h2 class="complete-title">ご注文ありがとうございます！</h2>
+          <p class="complete-desc">ご注文を承りました。ご登録のメールアドレスに確認メールをお送りしました。</p>
+          <div class="complete-order" id="completeOrder"></div>
+          <div class="complete-actions">
+            <a href="index.html" class="btn-primary">ショッピングを続ける</a>
+            <a href="admin.html" class="btn-ghost">管理画面で注文を確認（デモ）</a>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Right: Order summary -->
+      <aside class="checkout-summary" id="summarySide">
+        <div class="summary-card" id="summaryCard">
+          <h3 class="summary-title">ご注文内容</h3>
+          <div class="summary-items" id="summaryItems"></div>
+          <div class="summary-row"><span>小計</span><span id="sumSubtotal">¥0</span></div>
+          <div class="summary-row"><span>送料</span><span id="sumShipping">¥0</span></div>
+          <div class="summary-row summary-row-option" id="sumExpressRow" hidden><span>お急ぎ便</span><span id="sumExpress">¥0</span></div>
+          <div class="summary-row summary-row-option" id="sumCodRow" hidden><span>代引手数料</span><span id="sumCod">¥0</span></div>
+          <div class="summary-divider"></div>
+          <div class="summary-total">
+            <span>合計</span>
+            <span class="summary-total-value"><small>(税込)</small><b id="sumTotal">¥0</b></span>
+          </div>
+          <div class="summary-bonus" id="sumFreeHint" hidden></div>
+        </div>
+        <div class="summary-trust">
+          <div class="trust-item">
+            <span class="trust-icon">🚚</span>
+            <div><b>¥5,000以上送料無料</b><small>最短翌々日お届け</small></div>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">❄️</span>
+            <div><b>急速冷凍 -40℃</b><small>鮮度そのままお届け</small></div>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">🔒</span>
+            <div><b>安全な決済</b><small>SSL暗号化通信</small></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ======= TOAST ======= -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/checkout.js"></script>
+</body>
+</html>

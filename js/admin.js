@@ -106,9 +106,7 @@ function renderDashboard() {
 }
 
 function placeholderImage(cat) {
-  const emoji = Format.categoryEmoji(cat);
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><rect fill='%23e6f2f5' width='120' height='120'/><text x='60' y='80' font-size='60' text-anchor='middle'>${emoji}</text></svg>`;
-  return 'data:image/svg+xml;utf8,' + svg;
+  return generateProductImage(cat, 1);
 }
 
 // ==== 商品一覧(管理) ====
@@ -275,6 +273,20 @@ function saveProduct() {
 }
 
 // ==== 注文履歴 ====
+const ORDER_STATUS = {
+  pending:   { label: '受付中',   cls: 'pending',   next: 'preparing' },
+  preparing: { label: '準備中',   cls: 'preparing', next: 'shipped'   },
+  shipped:   { label: '発送済み', cls: 'shipped',   next: 'delivered' },
+  delivered: { label: '配達完了', cls: 'delivered', next: null        },
+  cancelled: { label: 'キャンセル', cls: 'cancelled', next: null      }
+};
+
+const PAYMENT_LABEL = {
+  card: 'クレジット',
+  bank: '銀行振込',
+  cod:  '代金引換'
+};
+
 function renderOrders() {
   const orders = DataStore.getOrders();
   const box = document.getElementById('ordersList');
@@ -288,22 +300,194 @@ function renderOrders() {
     `;
     return;
   }
-  box.innerHTML = orders.map(o => {
-    const count = o.items.reduce((s, i) => s + i.qty, 0);
-    const itemNames = o.items.slice(0, 2).map(i => i.name).join(' / ');
-    const more = o.items.length > 2 ? ` 他${o.items.length - 2}点` : '';
-    return `
-      <div class="order-row">
-        <span class="order-id">#${o.id}</span>
-        <div class="order-summary">
-          <b>${itemNames}${more}</b>
-          <small>${count}点 / ${Format.date(o.createdAt)}</small>
+  // フィルタバー + リスト
+  const status = adminState.orderFilter || 'all';
+  const counts = Object.keys(ORDER_STATUS).reduce((acc, k) => {
+    acc[k] = orders.filter(o => (o.status || 'pending') === k).length;
+    return acc;
+  }, {});
+  const filtered = status === 'all'
+    ? orders
+    : orders.filter(o => (o.status || 'pending') === status);
+  const tabs = [
+    ['all', 'すべて', orders.length],
+    ['pending', '受付中', counts.pending || 0],
+    ['preparing', '準備中', counts.preparing || 0],
+    ['shipped', '発送済み', counts.shipped || 0],
+    ['delivered', '配達完了', counts.delivered || 0]
+  ].map(([k, label, n]) => `
+    <button class="order-tab ${status === k ? 'active' : ''}" onclick="setOrderFilter('${k}')">
+      ${label}<span class="tab-count">${n}</span>
+    </button>
+  `).join('');
+
+  box.innerHTML = `
+    <div class="order-tabs">${tabs}</div>
+    <div class="order-list">
+      ${filtered.length
+        ? filtered.map(renderOrderCard).join('')
+        : `<div class="empty-panel" style="padding:40px 20px"><p>該当する注文はありません</p></div>`}
+    </div>
+  `;
+}
+
+function setOrderFilter(k) {
+  adminState.orderFilter = k;
+  renderOrders();
+}
+
+function renderOrderCard(o) {
+  const status = o.status || 'pending';
+  const st = ORDER_STATUS[status] || ORDER_STATUS.pending;
+  const count = o.items.reduce((s, i) => s + i.qty, 0);
+  const isOpen = adminState.openOrderId === o.id;
+  const firstItem = o.items[0];
+  const thumb = firstItem && firstItem.image
+    ? `<img class="order-thumb" src="${firstItem.image}" alt="" onerror="this.style.display='none'">`
+    : `<div class="order-thumb order-thumb-placeholder">📦</div>`;
+  const itemNames = o.items.slice(0, 2).map(i => i.name).join(' / ');
+  const more = o.items.length > 2 ? ` 他${o.items.length - 2}点` : '';
+  const paymentLabel = PAYMENT_LABEL[o.paymentMethod] || (o.paymentMethod || '-');
+  const shipName = o.shippingInfo?.name || '-';
+  const shipPref = o.shippingInfo?.pref || '';
+
+  return `
+    <article class="admin-order ${isOpen ? 'open' : ''}">
+      <header class="admin-order-head" onclick="toggleOrder('${o.id}')">
+        ${thumb}
+        <div class="admin-order-meta">
+          <div class="admin-order-top">
+            <span class="order-id">#${o.id}</span>
+            <span class="status-chip status-${st.cls}">${st.label}</span>
+          </div>
+          <b class="admin-order-title">${escapeHtmlAdmin(itemNames)}${more}</b>
+          <div class="admin-order-sub">
+            <span>${count}点</span>
+            <span class="dot">・</span>
+            <span>${escapeHtmlAdmin(shipName)}様${shipPref ? '（' + escapeHtmlAdmin(shipPref) + '）' : ''}</span>
+            <span class="dot">・</span>
+            <span>${paymentLabel}</span>
+            <span class="dot">・</span>
+            <span>${Format.date(o.createdAt)}</span>
+          </div>
         </div>
-        <span class="order-total">${Format.price(o.total)}</span>
-        <span class="status-chip">受付中</span>
+        <div class="admin-order-right">
+          <span class="order-total">${Format.price(o.total)}</span>
+          <span class="toggle-icon" aria-label="詳細">${isOpen ? '▲' : '▼'}</span>
+        </div>
+      </header>
+
+      ${isOpen ? renderOrderDetail(o, st) : ''}
+    </article>
+  `;
+}
+
+function renderOrderDetail(o, st) {
+  const s = o.shippingInfo || {};
+  const p = o.paymentSummary || {};
+  const cardText = p.method === 'card'
+    ? `${p.brand || 'Card'} **** **** **** ${p.last4 || '----'} / ${p.cardName || ''} / ${p.exp || ''}`
+    : (o.paymentMethod === 'bank' ? '銀行振込（入金確認中）' : (o.paymentMethod === 'cod' ? '代金引換' : '-'));
+  const deliveryLabel = o.deliveryType === 'express' ? 'お急ぎ便' : '通常配送（クール便）';
+
+  const items = o.items.map(i => `
+    <tr>
+      <td class="o-item-thumb">${i.image ? `<img src="${i.image}" alt="">` : '📦'}</td>
+      <td>
+        <b>${escapeHtmlAdmin(i.name)}</b>
+        <small>${Format.price(i.price)} × ${i.qty}点</small>
+      </td>
+      <td class="o-item-price">${Format.price(i.price * i.qty)}</td>
+    </tr>
+  `).join('');
+
+  const nextBtn = st.next
+    ? `<button class="btn-solid" onclick="updateOrderStatus('${o.id}', '${st.next}')">
+         ${ORDER_STATUS[st.next].label}に進める
+       </button>`
+    : '';
+
+  return `
+    <div class="admin-order-body">
+      <div class="admin-order-grid">
+        <section class="o-section">
+          <h4>お届け先</h4>
+          <dl class="o-kv">
+            <dt>お名前</dt><dd><b>${escapeHtmlAdmin(s.name || '-')}</b>（${escapeHtmlAdmin(s.nameKana || '')}）</dd>
+            <dt>郵便番号</dt><dd>〒${escapeHtmlAdmin(s.zip || '-')}</dd>
+            <dt>住所</dt><dd>${escapeHtmlAdmin(s.pref || '')}${escapeHtmlAdmin(s.city || '')}<br>${escapeHtmlAdmin(s.address || '')}</dd>
+            <dt>電話</dt><dd>${escapeHtmlAdmin(s.phone || '-')}</dd>
+            <dt>メール</dt><dd>${escapeHtmlAdmin(s.email || '-')}</dd>
+            <dt>配送方法</dt><dd>${deliveryLabel}</dd>
+            <dt>お届け希望</dt><dd>${s.deliveryDate ? Format.date(new Date(s.deliveryDate).getTime()) : '指定なし'}${s.deliveryTime ? ' / ' + escapeHtmlAdmin(s.deliveryTime) : ''}</dd>
+            ${o.note ? `<dt>備考</dt><dd>${escapeHtmlAdmin(o.note)}</dd>` : ''}
+          </dl>
+        </section>
+        <section class="o-section">
+          <h4>お支払い</h4>
+          <dl class="o-kv">
+            <dt>お支払方法</dt><dd><b>${PAYMENT_LABEL[o.paymentMethod] || o.paymentMethod || '-'}</b></dd>
+            <dt>詳細</dt><dd>${cardText}</dd>
+            <dt>小計</dt><dd>${Format.price(o.subtotal || 0)}</dd>
+            <dt>送料</dt><dd>${(o.shipping || 0) === 0 ? '<b style="color:var(--c-primary)">無料</b>' : Format.price(o.shipping || 0)}</dd>
+            ${o.expressFee ? `<dt>お急ぎ便</dt><dd>${Format.price(o.expressFee)}</dd>` : ''}
+            ${o.codFee ? `<dt>代引手数料</dt><dd>${Format.price(o.codFee)}</dd>` : ''}
+            <dt>合計</dt><dd class="o-total">${Format.price(o.total)}</dd>
+          </dl>
+        </section>
       </div>
-    `;
-  }).join('');
+
+      <section class="o-section">
+        <h4>ご注文商品（${o.items.length}種・${o.items.reduce((s,i)=>s+i.qty,0)}点）</h4>
+        <table class="o-items">
+          <tbody>${items}</tbody>
+        </table>
+      </section>
+
+      <section class="o-section">
+        <h4>ステータス操作</h4>
+        <div class="status-actions">
+          ${nextBtn}
+          ${st.cls !== 'cancelled' && st.cls !== 'delivered'
+            ? `<button class="btn-danger" onclick="updateOrderStatus('${o.id}', 'cancelled')">キャンセル</button>`
+            : ''}
+          <select class="status-select" onchange="updateOrderStatus('${o.id}', this.value)">
+            <option value="">ステータス変更…</option>
+            ${Object.entries(ORDER_STATUS).map(([k, v]) =>
+              `<option value="${k}" ${k === (o.status||'pending') ? 'selected' : ''}>${v.label}</option>`
+            ).join('')}
+          </select>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+function toggleOrder(id) {
+  adminState.openOrderId = (adminState.openOrderId === id) ? null : id;
+  renderOrders();
+}
+
+function updateOrderStatus(id, status) {
+  if (!status) return;
+  const orders = DataStore.getOrders();
+  const o = orders.find(x => x.id === id);
+  if (!o) return;
+  o.status = status;
+  localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+  renderOrders();
+  renderDashboard();
+  showToast('📦 ステータスを「' + (ORDER_STATUS[status]?.label || status) + '」に更新しました');
+}
+
+function escapeHtmlAdmin(s) {
+  if (s == null) return '';
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 // ==== 店舗設定 ====
