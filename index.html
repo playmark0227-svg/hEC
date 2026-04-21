@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>海市 -UMIICHI- | 北海道産直 海鮮ECサイト</title>
+  <meta name="description" content="北海道オホーツクから直送する新鮮なホタテ・カニ・タコ・イカの水産加工品通販サイト。活〆急速冷凍で鮮度そのまま、ご家庭へ。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ======= TOP NOTICE BAR ======= -->
+  <div class="notice-bar">
+    <span class="notice-text">🚚 ¥5,000以上のご購入で<b>送料無料</b> / 本日注文で最短翌々日お届け</span>
+  </div>
+
+  <!-- ======= HEADER ======= -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="index.html" aria-label="海市ホーム">
+        <span class="logo-mark">🌊</span>
+        <span class="logo-text">
+          <b>海市</b><small>UMIICHI</small>
+        </span>
+      </a>
+
+      <form class="search-box" onsubmit="event.preventDefault(); handleSearch();">
+        <input id="searchInput" type="search" placeholder="商品を検索（例：ホタテ、カニ、刺身用）" />
+        <button type="submit" aria-label="検索">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        </button>
+      </form>
+
+      <nav class="header-nav">
+        <a href="admin.html" class="nav-link" title="店舗管理">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>管理</span>
+        </a>
+        <button class="nav-link cart-btn" onclick="openCart()" title="カート">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span>カート</span>
+          <span id="cartBadge" class="cart-badge" hidden>0</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ======= HERO ======= -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <p class="hero-lead">北の海から、食卓へ。</p>
+        <h1 class="hero-title">獲れたての鮮度を、<br/>そのまま冷凍。</h1>
+        <p class="hero-desc">オホーツクの海で育った海の幸を、<br/>水揚げから急速冷凍まで自社一貫。<br/>プロが認める鮮度を、ご自宅でどうぞ。</p>
+        <div class="hero-cta">
+          <a href="#products" class="btn-primary">商品を見る</a>
+          <a href="#story" class="btn-ghost">海市のこだわり</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card hero-card-1">🐚<span>ホタテ</span></div>
+        <div class="hero-card hero-card-2">🦀<span>カニ</span></div>
+        <div class="hero-card hero-card-3">🐙<span>タコ</span></div>
+        <div class="hero-card hero-card-4">🦑<span>イカ</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= CATEGORY BAR ======= -->
+  <section class="category-bar" id="products">
+    <div class="section-inner">
+      <h2 class="section-title">カテゴリーから探す</h2>
+      <div class="category-grid" id="categoryGrid"></div>
+    </div>
+  </section>
+
+  <!-- ======= PRODUCT LIST ======= -->
+  <section class="product-section">
+    <div class="section-inner">
+      <div class="product-header">
+        <h2 class="section-title" id="productsTitle">すべての商品</h2>
+        <div class="sort-box">
+          <label>並び替え:
+            <select id="sortSelect" onchange="renderProducts()">
+              <option value="newest">新着順</option>
+              <option value="price-asc">価格が安い順</option>
+              <option value="price-desc">価格が高い順</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="product-grid" id="productGrid"></div>
+      <div id="emptyState" class="empty-state" hidden>
+        <p>該当する商品が見つかりませんでした。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= STORY ======= -->
+  <section class="story" id="story">
+    <div class="section-inner">
+      <h2 class="section-title">海市のこだわり</h2>
+      <div class="story-grid">
+        <div class="story-card">
+          <div class="story-icon">🎣</div>
+          <h3>水揚げ直後の鮮度</h3>
+          <p>水揚げから加工までを自社港でワンストップ。魚体の温度を保ったまま処理することで、プロも驚く鮮度を実現。</p>
+        </div>
+        <div class="story-card">
+          <div class="story-icon">❄️</div>
+          <h3>急速冷凍 -40℃</h3>
+          <p>独自のプロトン凍結により細胞破壊を最小限に。解凍しても旨みの流出がほとんどありません。</p>
+        </div>
+        <div class="story-card">
+          <div class="story-icon">📦</div>
+          <h3>翌々日お届け</h3>
+          <p>全国どこでも最短翌々日にクール便でお届け。冷凍のまま食卓へ、いつでも海の鮮度を。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= FOOTER ======= -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-mark">🌊</span>
+          <span class="logo-text"><b>海市</b><small>UMIICHI</small></span>
+        </div>
+        <p class="footer-tag">北海道産直の海鮮専門店</p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <h4>ショッピング</h4>
+          <a href="#products">商品一覧</a>
+          <a href="#story">海市のこだわり</a>
+        </div>
+        <div>
+          <h4>サポート</h4>
+          <a href="#">送料について</a>
+          <a href="#">返品・交換</a>
+          <a href="#">よくある質問</a>
+        </div>
+        <div>
+          <h4>会社情報</h4>
+          <a href="#">運営会社</a>
+          <a href="#">特定商取引法</a>
+          <a href="admin.html">管理者ログイン</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <small>© 2026 UMIICHI Seafood Co., Ltd.</small>
+    </div>
+  </footer>
+
+  <!-- ======= PRODUCT DETAIL MODAL ======= -->
+  <div class="modal" id="productModal" hidden>
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-panel">
+      <button class="modal-close" onclick="closeModal()" aria-label="閉じる">✕</button>
+      <div id="productDetail"></div>
+    </div>
+  </div>
+
+  <!-- ======= CART DRAWER ======= -->
+  <div class="cart-drawer" id="cartDrawer" hidden>
+    <div class="cart-backdrop" onclick="closeCart()"></div>
+    <aside class="cart-panel">
+      <header class="cart-header">
+        <h3>ショッピングカート</h3>
+        <button class="cart-close" onclick="closeCart()" aria-label="閉じる">✕</button>
+      </header>
+      <div class="cart-body" id="cartBody"></div>
+      <footer class="cart-footer" id="cartFooter"></footer>
+    </aside>
+  </div>
+
+  <!-- ======= TOAST ======= -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/shop.js"></script>
+</body>
+</html>

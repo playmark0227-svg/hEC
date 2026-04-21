@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>店舗管理 | 海市 -UMIICHI-</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body class="admin-body">
+
+  <!-- ======= SIDEBAR ======= -->
+  <aside class="admin-sidebar">
+    <div class="admin-logo">
+      <span class="logo-mark">🌊</span>
+      <div>
+        <b>海市</b>
+        <small>Store Admin</small>
+      </div>
+    </div>
+    <nav class="admin-nav">
+      <button class="admin-nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        ダッシュボード
+      </button>
+      <button class="admin-nav-btn" data-view="products" onclick="switchView('products')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        商品管理
+      </button>
+      <button class="admin-nav-btn" data-view="orders" onclick="switchView('orders')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        注文履歴
+      </button>
+      <button class="admin-nav-btn" data-view="shop" onclick="switchView('shop')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        店舗設定
+      </button>
+    </nav>
+    <div class="admin-sidebar-foot">
+      <a href="index.html" class="view-shop-btn" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        店舗ページを見る
+      </a>
+      <button class="reset-btn" onclick="resetAll()">
+        🔄 デモデータをリセット
+      </button>
+    </div>
+  </aside>
+
+  <!-- ======= MAIN AREA ======= -->
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 id="viewTitle">ダッシュボード</h1>
+        <p id="viewSubtitle" class="admin-subtitle">店舗の概要をひと目で確認</p>
+      </div>
+      <div class="admin-header-actions">
+        <span class="admin-user">
+          <span class="admin-avatar">🧑‍🍳</span>
+          <span>店長</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- ==== DASHBOARD ==== -->
+    <section class="admin-view" id="view-dashboard">
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="dashboard-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>カテゴリ別 商品数</h2>
+          </div>
+          <div id="categoryStats"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>最近の商品</h2>
+          </div>
+          <div id="recentProducts"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==== PRODUCTS ==== -->
+    <section class="admin-view" id="view-products" hidden>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="search" id="adminSearch" placeholder="🔍 商品名で検索..." oninput="renderAdminProducts()" />
+          <select id="adminCategory" onchange="renderAdminProducts()">
+            <option value="all">すべてのカテゴリ</option>
+            <option value="scallop">🐚 ホタテ</option>
+            <option value="crab">🦀 カニ</option>
+            <option value="octopus">🐙 タコ</option>
+            <option value="squid">🦑 イカ</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="openProductForm()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          新しい商品を追加
+        </button>
+      </div>
+      <div class="product-table-wrap">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>公開</th>
+              <th>商品</th>
+              <th>カテゴリ</th>
+              <th>価格</th>
+              <th>在庫</th>
+              <th>ステータス</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="adminProductTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ==== ORDERS ==== -->
+    <section class="admin-view" id="view-orders" hidden>
+      <div class="panel">
+        <div id="ordersList"></div>
+      </div>
+    </section>
+
+    <!-- ==== SHOP SETTINGS ==== -->
+    <section class="admin-view" id="view-shop" hidden>
+      <div class="panel">
+        <div class="panel-head"><h2>店舗情報</h2></div>
+        <form id="shopForm" onsubmit="event.preventDefault(); saveShop();" class="form-grid">
+          <label>
+            <span>店舗名</span>
+            <input type="text" name="name" required />
+          </label>
+          <label>
+            <span>キャッチコピー</span>
+            <input type="text" name="tagline" />
+          </label>
+          <label class="full">
+            <span>店舗紹介</span>
+            <textarea name="description" rows="3"></textarea>
+          </label>
+          <label>
+            <span>住所</span>
+            <input type="text" name="address" />
+          </label>
+          <label>
+            <span>電話番号</span>
+            <input type="text" name="phone" />
+          </label>
+          <label class="full">
+            <span>メールアドレス</span>
+            <input type="email" name="email" />
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">保存する</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======= PRODUCT FORM DRAWER ======= -->
+  <div class="form-drawer" id="productForm" hidden>
+    <div class="form-backdrop" onclick="closeProductForm()"></div>
+    <aside class="form-panel">
+      <header class="form-head">
+        <h2 id="productFormTitle">新しい商品を追加</h2>
+        <button class="cart-close" onclick="closeProductForm()" aria-label="閉じる">✕</button>
+      </header>
+      <form id="productFormEl" onsubmit="event.preventDefault(); saveProduct();" class="form-body">
+        <input type="hidden" name="id" />
+
+        <section class="form-section">
+          <h3>基本情報</h3>
+          <label class="full">
+            <span>商品名 <em>*</em></span>
+            <input type="text" name="name" required placeholder="例: 活〆北海道産 特大ホタテ貝柱 1kg" />
+          </label>
+          <div class="form-row">
+            <label>
+              <span>カテゴリ <em>*</em></span>
+              <select name="category" required>
+                <option value="scallop">🐚 ホタテ</option>
+                <option value="crab">🦀 カニ</option>
+                <option value="octopus">🐙 タコ</option>
+                <option value="squid">🦑 イカ</option>
+              </select>
+            </label>
+            <label>
+              <span>バッジ（任意）</span>
+              <select name="badge">
+                <option value="">なし</option>
+                <option value="NEW">NEW (新商品)</option>
+                <option value="BEST">BEST (人気)</option>
+                <option value="SALE">SALE (セール)</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3>価格と在庫</h3>
+          <div class="form-row">
+            <label>
+              <span>販売価格 (円) <em>*</em></span>
+              <input type="number" name="price" required min="0" placeholder="5980" />
+            </label>
+            <label>
+              <span>参考価格 (任意)</span>
+              <input type="number" name="originalPrice" min="0" placeholder="7980（割引表示用）" />
+            </label>
+          </div>
+          <label>
+            <span>在庫数 <em>*</em></span>
+            <input type="number" name="stock" required min="0" value="10" />
+          </label>
+        </section>
+
+        <section class="form-section">
+          <h3>画像</h3>
+          <label class="full">
+            <span>画像URL</span>
+            <input type="url" name="image" placeholder="https://..." oninput="previewImage(this.value)" />
+          </label>
+          <p class="form-hint">または端末から画像をアップロード：</p>
+          <label class="file-drop">
+            <input type="file" accept="image/*" onchange="uploadImage(this)" />
+            <span>📷 クリックして画像を選択</span>
+          </label>
+          <div class="image-preview" id="imagePreview">
+            <span>プレビュー</span>
+          </div>
+        </section>
+
+        <section class="form-section">
+          <h3>商品説明</h3>
+          <label class="full">
+            <span>説明文</span>
+            <textarea name="description" rows="5" placeholder="産地、調理方法、味の特徴などを自由に記入..."></textarea>
+          </label>
+          <label class="full">
+            <span>タグ (カンマ区切り)</span>
+            <input type="text" name="tags" placeholder="冷凍, 送料無料, 北海道産" />
+          </label>
+        </section>
+
+        <section class="form-section">
+          <h3>公開設定</h3>
+          <label class="switch-row">
+            <div>
+              <b>店舗ページに公開する</b>
+              <small>オフにすると管理画面にのみ表示されます</small>
+            </div>
+            <input type="checkbox" name="published" checked class="switch" />
+          </label>
+        </section>
+
+        <div class="form-actions sticky">
+          <button type="button" class="btn-ghost" onclick="closeProductForm()">キャンセル</button>
+          <button type="submit" class="btn-primary">保存する</button>
+        </div>
+      </form>
+    </aside>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
