@@ -239,6 +239,23 @@
             </fieldset>
 
             <fieldset class="form-fieldset">
+              <legend>クーポンコード</legend>
+              <div class="coupon-input-row">
+                <input type="text" id="couponInput" placeholder="お持ちのクーポンコードを入力" autocomplete="off" style="text-transform:uppercase;font-family:monospace;letter-spacing:.05em">
+                <button type="button" class="btn-ghost btn-sm" onclick="applyCoupon()">適用する</button>
+              </div>
+              <div id="couponStatus" class="coupon-status-msg" hidden></div>
+              <p class="form-hint" style="margin-top:6px">
+                💡 お試し用コード:
+                <code onclick="document.getElementById('couponInput').value='WELCOME10';applyCoupon();" style="cursor:pointer;text-decoration:underline">WELCOME10</code>
+                ・
+                <code onclick="document.getElementById('couponInput').value='UMIICHI500';applyCoupon();" style="cursor:pointer;text-decoration:underline">UMIICHI500</code>
+                ・
+                <code onclick="document.getElementById('couponInput').value='FREESHIP';applyCoupon();" style="cursor:pointer;text-decoration:underline">FREESHIP</code>
+              </p>
+            </fieldset>
+
+            <fieldset class="form-fieldset">
               <legend>ご利用規約</legend>
               <label class="check-row">
                 <input type="checkbox" name="agreeTos" required>
@@ -280,6 +297,14 @@
               <button type="button" class="link-btn" onclick="goStep(2)">変更</button>
             </div>
             <div id="reviewPayment" class="review-body"></div>
+          </div>
+
+          <div class="review-block" id="reviewCouponBlock" hidden>
+            <div class="review-head">
+              <h3>🎟️ 適用中のクーポン</h3>
+              <button type="button" class="link-btn" onclick="goStep(2)">変更</button>
+            </div>
+            <div id="reviewCoupon" class="review-body"></div>
           </div>
 
           <div class="review-block">
@@ -330,6 +355,10 @@
           <div class="summary-row"><span>送料</span><span id="sumShipping">¥0</span></div>
           <div class="summary-row summary-row-option" id="sumExpressRow" hidden><span>お急ぎ便</span><span id="sumExpress">¥0</span></div>
           <div class="summary-row summary-row-option" id="sumCodRow" hidden><span>代引手数料</span><span id="sumCod">¥0</span></div>
+          <div class="summary-row summary-row-discount" id="sumDiscountRow" hidden>
+            <span><span class="discount-badge">🎟️</span> <span id="sumCouponLabel">クーポン割引</span></span>
+            <span id="sumDiscount">-¥0</span>
+          </div>
           <div class="summary-divider"></div>
           <div class="summary-total">
             <span>合計</span>

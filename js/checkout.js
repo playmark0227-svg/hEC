@@ -7,7 +7,8 @@ const CheckoutState = {
   shipping: null,
   payment: null,
   items: [],
-  orderId: null
+  orderId: null,
+  appliedCoupon: null  // { code, name, type, discount, shippingFree }
 };
 
 const STORAGE_KEY_DRAFT = 'umiichi_checkout_draft';
@@ -181,11 +182,113 @@ function computeTotals() {
   const subtotal = CheckoutState.items.reduce((s, i) => s + i.price * i.qty, 0);
   const delivery = document.querySelector('input[name="delivery"]:checked')?.value || 'standard';
   const payment = document.querySelector('input[name="payment"]:checked')?.value || 'card';
-  const baseShipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : BASE_SHIPPING;
+  let baseShipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : BASE_SHIPPING;
   const express = delivery === 'express' ? EXPRESS_FEE : 0;
   const cod = payment === 'cod' ? COD_FEE : 0;
-  const total = subtotal + baseShipping + express + cod;
-  return { subtotal, baseShipping, express, cod, total, delivery, payment };
+
+  // クーポン適用
+  let discount = 0;
+  let couponShippingFree = false;
+  const ac = CheckoutState.appliedCoupon;
+  if (ac) {
+    // 小計が変わった可能性があるので再検証
+    const recheck = DataStore.validateCoupon(ac.code, subtotal);
+    if (recheck.ok) {
+      discount = recheck.discount || 0;
+      couponShippingFree = !!recheck.shippingFree;
+      // 最新の計算結果で上書き
+      CheckoutState.appliedCoupon = {
+        code: recheck.coupon.code,
+        name: recheck.coupon.name,
+        type: recheck.coupon.type,
+        discount,
+        shippingFree: couponShippingFree
+      };
+    } else {
+      // 条件から外れた場合は解除
+      CheckoutState.appliedCoupon = null;
+      showCouponStatus(recheck.error, 'error');
+    }
+  }
+  if (couponShippingFree) baseShipping = 0;
+  const total = Math.max(0, subtotal + baseShipping + express + cod - discount);
+  return { subtotal, baseShipping, express, cod, discount, couponShippingFree, total, delivery, payment };
+}
+
+// =====================================================
+// クーポン適用
+// =====================================================
+function applyCoupon() {
+  const input = document.getElementById('couponInput');
+  const code = (input?.value || '').trim().toUpperCase();
+  if (!code) {
+    showCouponStatus('クーポンコードを入力してください', 'error');
+    return;
+  }
+  const subtotal = CheckoutState.items.reduce((s, i) => s + i.price * i.qty, 0);
+  const result = DataStore.validateCoupon(code, subtotal);
+  if (!result.ok) {
+    CheckoutState.appliedCoupon = null;
+    showCouponStatus(result.error, 'error');
+    renderSummary();
+    return;
+  }
+  CheckoutState.appliedCoupon = {
+    code: result.coupon.code,
+    name: result.coupon.name,
+    type: result.coupon.type,
+    discount: result.discount || 0,
+    shippingFree: !!result.shippingFree
+  };
+  let msg = '';
+  if (result.shippingFree) {
+    msg = `✅ 「${result.coupon.name}」を適用しました（送料無料）`;
+  } else {
+    msg = `✅ 「${result.coupon.name}」を適用しました（${Format.price(result.discount)} 割引）`;
+  }
+  showCouponStatus(msg, 'success');
+  input.value = result.coupon.code;
+  input.disabled = true;
+  // 「適用する」ボタンを「解除」に切替
+  const btn = input.parentElement.querySelector('button');
+  if (btn) {
+    btn.textContent = '解除';
+    btn.onclick = removeCoupon;
+    btn.classList.add('coupon-btn-remove');
+  }
+  renderSummary();
+}
+
+function removeCoupon() {
+  CheckoutState.appliedCoupon = null;
+  const input = document.getElementById('couponInput');
+  if (input) {
+    input.value = '';
+    input.disabled = false;
+  }
+  const btn = input?.parentElement.querySelector('button');
+  if (btn) {
+    btn.textContent = '適用する';
+    btn.onclick = applyCoupon;
+    btn.classList.remove('coupon-btn-remove');
+  }
+  showCouponStatus('', 'clear');
+  renderSummary();
+}
+
+function showCouponStatus(msg, kind) {
+  const el = document.getElementById('couponStatus');
+  if (!el) return;
+  if (!msg || kind === 'clear') {
+    el.hidden = true;
+    el.textContent = '';
+    el.classList.remove('is-success', 'is-error');
+    return;
+  }
+  el.hidden = false;
+  el.textContent = msg;
+  el.classList.toggle('is-success', kind === 'success');
+  el.classList.toggle('is-error', kind === 'error');
 }
 
 function renderSummary() {
@@ -205,12 +308,28 @@ function renderSummary() {
   `).join('');
   document.getElementById('sumSubtotal').textContent = Format.price(t.subtotal);
   document.getElementById('sumShipping').innerHTML = t.baseShipping === 0
-    ? '<b>無料</b>'
+    ? (t.couponShippingFree ? '<b style="color:#16a34a">無料（クーポン）</b>' : '<b>無料</b>')
     : Format.price(t.baseShipping);
   document.getElementById('sumExpressRow').hidden = t.express === 0;
   document.getElementById('sumExpress').textContent = Format.price(t.express);
   document.getElementById('sumCodRow').hidden = t.cod === 0;
   document.getElementById('sumCod').textContent = Format.price(t.cod);
+  // クーポン割引の表示
+  const discountRow = document.getElementById('sumDiscountRow');
+  const discountEl = document.getElementById('sumDiscount');
+  const couponLabel = document.getElementById('sumCouponLabel');
+  if (discountRow && discountEl) {
+    if (t.discount > 0) {
+      discountRow.hidden = false;
+      discountEl.textContent = '-' + Format.price(t.discount);
+      if (couponLabel && CheckoutState.appliedCoupon) {
+        couponLabel.textContent = CheckoutState.appliedCoupon.name;
+      }
+    } else {
+      discountRow.hidden = true;
+      discountEl.textContent = '-¥0';
+    }
+  }
   document.getElementById('sumTotal').textContent = Format.price(t.total);
   const hint = document.getElementById('sumFreeHint');
   if (t.subtotal < FREE_SHIPPING_THRESHOLD) {
@@ -274,6 +393,28 @@ function renderReview() {
       <div class="review-item-price">${Format.price(i.price * i.qty)}</div>
     </div>
   `).join('');
+
+  // クーポン適用状況の表示
+  const reviewCouponWrap = document.getElementById('reviewCouponBlock');
+  const reviewCouponBody = document.getElementById('reviewCoupon');
+  if (reviewCouponWrap && reviewCouponBody) {
+    const ac = CheckoutState.appliedCoupon;
+    if (ac) {
+      const t = computeTotals();
+      const benefit = ac.shippingFree
+        ? '送料無料'
+        : `${Format.price(t.discount)} 割引`;
+      reviewCouponWrap.hidden = false;
+      reviewCouponBody.innerHTML = `
+        <dl class="review-kv">
+          <dt>クーポン</dt><dd><b>${escapeHtml(ac.name)}</b> <code style="font-family:monospace;background:#f1f5f9;padding:2px 8px;border-radius:4px;font-size:12px;margin-left:6px">${escapeHtml(ac.code)}</code></dd>
+          <dt>特典</dt><dd style="color:#16a34a;font-weight:700">${benefit}</dd>
+        </dl>
+      `;
+    } else {
+      reviewCouponWrap.hidden = true;
+    }
+  }
 }
 
 // =====================================================
@@ -286,6 +427,7 @@ function placeOrder() {
   // 擬似決済処理（1.2秒ディレイ）
   setTimeout(() => {
     const t = computeTotals();
+    const ac = CheckoutState.appliedCoupon;
     const order = DataStore.createOrder({
       items: CheckoutState.items.map(i => ({
         productId: i.productId,
@@ -298,6 +440,14 @@ function placeOrder() {
       shipping: t.baseShipping,
       expressFee: t.express,
       codFee: t.cod,
+      discount: t.discount || 0,
+      coupon: ac ? {
+        code: ac.code,
+        name: ac.name,
+        type: ac.type,
+        discount: t.discount || 0,
+        shippingFree: !!ac.shippingFree
+      } : null,
       total: t.total,
       shippingInfo: CheckoutState.shipping,
       paymentMethod: CheckoutState.payment.payment,
@@ -305,6 +455,10 @@ function placeOrder() {
       deliveryType: t.delivery,
       note: CheckoutState.shipping.note || ''
     });
+    // クーポン利用カウント
+    if (ac && ac.code) {
+      try { DataStore.incrementCouponUsage(ac.code); } catch (e) { console.warn(e); }
+    }
     CheckoutState.orderId = order.id;
     DataStore.clearCart();
     localStorage.removeItem(STORAGE_KEY_DRAFT);
@@ -353,6 +507,15 @@ function renderComplete(order) {
     ? Format.date(new Date(s.deliveryDate).getTime())
     : '最短翌々日';
 
+  // クーポン適用があれば表示
+  let couponRow = '';
+  if (order.coupon && (order.discount > 0 || order.coupon.shippingFree)) {
+    const benefit = order.coupon.shippingFree
+      ? '送料無料'
+      : `-${Format.price(order.discount || 0)}`;
+    couponRow = `<dt>🎟️ クーポン</dt><dd><b>${escapeHtml(order.coupon.name)}</b>（${escapeHtml(order.coupon.code)}）<span style="color:#16a34a;font-weight:700;margin-left:8px">${benefit}</span></dd>`;
+  }
+
   document.getElementById('completeOrder').innerHTML = `
     <div class="co-id">
       <span>注文番号</span>
@@ -362,6 +525,7 @@ function renderComplete(order) {
       <dt>お届け先</dt><dd>${escapeHtml(s.name)} 様<br>〒${escapeHtml(s.zip)} ${escapeHtml(s.pref)}${escapeHtml(s.city)}${escapeHtml(s.address)}</dd>
       <dt>お支払い</dt><dd>${pm}</dd>
       <dt>お届け予定</dt><dd>${expectedDate}${s.deliveryTime ? ' / ' + escapeHtml(s.deliveryTime) : ''}</dd>
+      ${couponRow}
       <dt>合計金額</dt><dd style="color:var(--c-primary);font-weight:900">${Format.price(order.total)}</dd>
     </dl>
   `;

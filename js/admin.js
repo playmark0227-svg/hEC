@@ -24,6 +24,7 @@ function switchView(name) {
     dashboard: ['ダッシュボード', '店舗の概要をひと目で確認'],
     products:  ['商品管理',     '商品の追加・編集・公開設定ができます'],
     orders:    ['注文履歴',     'お客様からの注文を管理'],
+    coupons:   ['クーポン管理', '割引クーポンの発行・管理'],
     shop:      ['店舗設定',     '店舗情報を更新']
   };
   document.getElementById('viewTitle').textContent = titles[name][0];
@@ -32,6 +33,7 @@ function switchView(name) {
   if (name === 'dashboard') renderDashboard();
   if (name === 'products')  renderAdminProducts();
   if (name === 'orders')    renderOrders();
+  if (name === 'coupons')   renderCoupons();
 }
 
 // ==== ダッシュボード ====
@@ -432,6 +434,8 @@ function renderOrderDetail(o, st) {
             <dt>送料</dt><dd>${(o.shipping || 0) === 0 ? '<b style="color:var(--c-primary)">無料</b>' : Format.price(o.shipping || 0)}</dd>
             ${o.expressFee ? `<dt>お急ぎ便</dt><dd>${Format.price(o.expressFee)}</dd>` : ''}
             ${o.codFee ? `<dt>代引手数料</dt><dd>${Format.price(o.codFee)}</dd>` : ''}
+            ${o.coupon ? `<dt>🎟️ クーポン</dt><dd style="color:#16a34a"><b>${escapeHtmlAdmin(o.coupon.name)}</b> <code style="font-family:monospace;background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:11px;margin-left:4px;color:var(--c-primary)">${escapeHtmlAdmin(o.coupon.code)}</code>${o.coupon.shippingFree ? '（送料無料）' : ''}</dd>` : ''}
+            ${(o.discount || 0) > 0 ? `<dt>クーポン割引</dt><dd style="color:#16a34a;font-weight:700">-${Format.price(o.discount)}</dd>` : ''}
             <dt>合計</dt><dd class="o-total">${Format.price(o.total)}</dd>
           </dl>
         </section>
@@ -488,6 +492,185 @@ function escapeHtmlAdmin(s) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+}
+
+// ==== クーポン管理 ====
+const COUPON_TYPE_LABEL = {
+  percent: '%OFF',
+  fixed: '¥OFF',
+  shipping: '送料無料'
+};
+
+function renderCoupons() {
+  const coupons = DataStore.getCoupons();
+  const box = document.getElementById('couponsList');
+  if (!coupons.length) {
+    box.innerHTML = `
+      <div class="empty-panel">
+        <div class="icon">🎟️</div>
+        <p>まだクーポンがありません</p>
+        <p style="font-size:12px">右上の「新規クーポンを追加」から発行できます</p>
+      </div>
+    `;
+    return;
+  }
+  box.innerHTML = `
+    <div class="coupons-grid">
+      ${coupons.map(c => renderCouponCard(c)).join('')}
+    </div>
+  `;
+}
+
+function renderCouponCard(c) {
+  const expired = c.expiresAt && Date.now() > c.expiresAt;
+  const used = c.usageLimit && c.usedCount >= c.usageLimit;
+  const isDisabled = !c.active || expired || used;
+  const badgeText = c.type === 'percent'
+    ? `${c.value}%OFF`
+    : c.type === 'fixed'
+      ? `¥${Number(c.value).toLocaleString('ja-JP')} OFF`
+      : '送料無料';
+  const statusText = !c.active ? '無効' : expired ? '期限切れ' : used ? '上限到達' : '有効';
+  const statusCls = !c.active ? 'inactive' : expired ? 'expired' : used ? 'limited' : 'active';
+
+  return `
+    <article class="coupon-card ${isDisabled ? 'disabled' : ''}">
+      <div class="coupon-left">
+        <div class="coupon-badge coupon-type-${c.type}">${badgeText}</div>
+        <code class="coupon-code">${escapeHtmlAdmin(c.code)}</code>
+      </div>
+      <div class="coupon-main">
+        <div class="coupon-name">${escapeHtmlAdmin(c.name)}</div>
+        <div class="coupon-meta">
+          ${c.minAmount ? `<span>最低 ${Format.price(c.minAmount)}〜</span>` : ''}
+          ${c.maxDiscount ? `<span>上限 ${Format.price(c.maxDiscount)}</span>` : ''}
+          ${c.usageLimit ? `<span>利用 ${c.usedCount || 0}/${c.usageLimit}</span>` : `<span>利用 ${c.usedCount || 0}回</span>`}
+          ${c.expiresAt ? `<span>期限 ${Format.date(c.expiresAt)}</span>` : ''}
+        </div>
+        <span class="coupon-status status-${statusCls}">${statusText}</span>
+      </div>
+      <div class="coupon-actions">
+        <button class="icon-btn" onclick="editCoupon('${c.id}')" title="編集">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="icon-btn" onclick="toggleCouponActive('${c.id}')" title="${c.active ? '無効化' : '有効化'}">
+          ${c.active
+            ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+            : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+          }
+        </button>
+        <button class="icon-btn icon-btn-danger" onclick="deleteCoupon('${c.id}')" title="削除">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6m5 0V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2"/></svg>
+        </button>
+      </div>
+    </article>
+  `;
+}
+
+function openCouponForm() {
+  adminState.editingCouponId = null;
+  const form = document.getElementById('couponFormEl');
+  form.reset();
+  form.id.value = '';
+  form.active.checked = true;
+  form.type.value = 'percent';
+  onCouponTypeChange('percent');
+  document.getElementById('couponFormTitle').textContent = '新しいクーポンを追加';
+  document.getElementById('couponForm').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCouponForm() {
+  document.getElementById('couponForm').hidden = true;
+  document.body.style.overflow = '';
+}
+
+function editCoupon(id) {
+  const c = DataStore.getCoupon(id);
+  if (!c) return;
+  adminState.editingCouponId = id;
+  const form = document.getElementById('couponFormEl');
+  form.id.value = c.id;
+  form.code.value = c.code;
+  form.name.value = c.name;
+  form.type.value = c.type;
+  form.value.value = c.value || 0;
+  form.maxDiscount.value = c.maxDiscount || '';
+  form.minAmount.value = c.minAmount || '';
+  form.usageLimit.value = c.usageLimit || '';
+  form.expiresAt.value = c.expiresAt ? new Date(c.expiresAt).toISOString().slice(0, 10) : '';
+  form.active.checked = !!c.active;
+  onCouponTypeChange(c.type);
+  document.getElementById('couponFormTitle').textContent = 'クーポンを編集';
+  document.getElementById('couponForm').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+function onCouponTypeChange(type) {
+  const row = document.getElementById('couponValueRow');
+  const form = document.getElementById('couponFormEl');
+  if (!row || !form) return;
+  if (type === 'shipping') {
+    row.style.display = 'none';
+    form.value.required = false;
+    form.value.value = 0;
+  } else {
+    row.style.display = '';
+    form.value.required = true;
+    form.maxDiscount.parentElement.style.display = type === 'percent' ? '' : 'none';
+  }
+}
+
+function saveCoupon() {
+  const form = document.getElementById('couponFormEl');
+  const fd = new FormData(form);
+  const data = {};
+  fd.forEach((v, k) => data[k] = v);
+  // 型変換
+  const coupon = {
+    id: data.id || null,
+    code: (data.code || '').toUpperCase().trim(),
+    name: data.name,
+    type: data.type,
+    value: Number(data.value || 0),
+    maxDiscount: data.maxDiscount ? Number(data.maxDiscount) : null,
+    minAmount: data.minAmount ? Number(data.minAmount) : 0,
+    usageLimit: data.usageLimit ? Number(data.usageLimit) : null,
+    expiresAt: data.expiresAt ? new Date(data.expiresAt).getTime() : null,
+    active: form.active.checked,
+    usedCount: 0
+  };
+  if (!coupon.code) {
+    showToast('クーポンコードを入力してください');
+    return;
+  }
+  // 重複チェック（新規時のみ）
+  if (!coupon.id) {
+    const existing = DataStore.getCouponByCode(coupon.code);
+    if (existing) {
+      showToast('このコードは既に存在します');
+      return;
+    }
+  }
+  DataStore.saveCoupon(coupon);
+  closeCouponForm();
+  renderCoupons();
+  showToast(adminState.editingCouponId ? '✏️ クーポンを更新しました' : '🎟️ クーポンを発行しました');
+}
+
+function toggleCouponActive(id) {
+  DataStore.toggleCoupon(id);
+  renderCoupons();
+  showToast('✅ 状態を切り替えました');
+}
+
+function deleteCoupon(id) {
+  const c = DataStore.getCoupon(id);
+  if (!c) return;
+  if (!confirm(`クーポン「${c.code}」を削除しますか？`)) return;
+  DataStore.deleteCoupon(id);
+  renderCoupons();
+  showToast('🗑️ クーポンを削除しました');
 }
 
 // ==== 店舗設定 ====

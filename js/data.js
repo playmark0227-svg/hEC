@@ -8,12 +8,13 @@ const STORAGE_KEYS = {
   CART: 'umiichi_cart',
   ORDERS: 'umiichi_orders',
   SHOP_INFO: 'umiichi_shop_info',
+  COUPONS: 'umiichi_coupons',
   DATA_VERSION: 'umiichi_data_version'
 };
 
 // サンプルデータのスキーマが変わった時にバージョンを上げる
 // → ユーザーのlocalStorageが古い場合は商品データのみ自動で最新化
-const DATA_VERSION = 2;
+const DATA_VERSION = 3;
 
 // カテゴリ定義
 const CATEGORIES = [
@@ -194,6 +195,53 @@ const DEFAULT_SHOP_INFO = {
   email: 'info@umiichi.example'
 };
 
+// サンプルクーポン
+// type: 'percent'（％オフ）/ 'fixed'（¥オフ）/ 'shipping'（送料無料）
+const SAMPLE_COUPONS = [
+  {
+    id: 'c001',
+    code: 'WELCOME10',
+    name: '新規のお客様 10%OFF',
+    type: 'percent',
+    value: 10,
+    minAmount: 3000,
+    maxDiscount: 2000,
+    expiresAt: null,
+    usageLimit: null,
+    usedCount: 0,
+    active: true,
+    createdAt: Date.now() - 86400000 * 30
+  },
+  {
+    id: 'c002',
+    code: 'UMIICHI500',
+    name: '¥500 OFF クーポン',
+    type: 'fixed',
+    value: 500,
+    minAmount: 5000,
+    maxDiscount: null,
+    expiresAt: null,
+    usageLimit: 100,
+    usedCount: 3,
+    active: true,
+    createdAt: Date.now() - 86400000 * 10
+  },
+  {
+    id: 'c003',
+    code: 'FREESHIP',
+    name: '送料無料クーポン',
+    type: 'shipping',
+    value: 0,
+    minAmount: 0,
+    maxDiscount: null,
+    expiresAt: null,
+    usageLimit: null,
+    usedCount: 0,
+    active: true,
+    createdAt: Date.now() - 86400000 * 5
+  }
+];
+
 // =====================================================
 // データ管理API
 // =====================================================
@@ -221,6 +269,9 @@ const DataStore = {
     }
     if (!localStorage.getItem(STORAGE_KEYS.ORDERS)) {
       localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.COUPONS)) {
+      localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(SAMPLE_COUPONS));
     }
     localStorage.setItem(STORAGE_KEYS.DATA_VERSION, String(DATA_VERSION));
   },
@@ -349,6 +400,87 @@ const DataStore = {
 
   saveShopInfo(info) {
     localStorage.setItem(STORAGE_KEYS.SHOP_INFO, JSON.stringify(info));
+  },
+
+  // ==== クーポン管理 ====
+  getCoupons() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.COUPONS) || '[]');
+  },
+
+  getCoupon(id) {
+    return this.getCoupons().find(c => c.id === id);
+  },
+
+  getCouponByCode(code) {
+    if (!code) return null;
+    return this.getCoupons().find(c => c.code.toLowerCase() === code.toLowerCase().trim());
+  },
+
+  saveCoupon(coupon) {
+    const all = this.getCoupons();
+    const idx = all.findIndex(c => c.id === coupon.id);
+    if (idx >= 0) {
+      all[idx] = { ...all[idx], ...coupon };
+    } else {
+      coupon.id = coupon.id || 'c' + Date.now();
+      coupon.createdAt = coupon.createdAt || Date.now();
+      coupon.usedCount = coupon.usedCount || 0;
+      all.unshift(coupon);
+    }
+    localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(all));
+    return coupon;
+  },
+
+  deleteCoupon(id) {
+    const filtered = this.getCoupons().filter(c => c.id !== id);
+    localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(filtered));
+  },
+
+  toggleCoupon(id) {
+    const all = this.getCoupons();
+    const c = all.find(x => x.id === id);
+    if (c) {
+      c.active = !c.active;
+      localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(all));
+    }
+    return c;
+  },
+
+  incrementCouponUsage(code) {
+    const all = this.getCoupons();
+    const c = all.find(x => x.code.toLowerCase() === code.toLowerCase());
+    if (c) {
+      c.usedCount = (c.usedCount || 0) + 1;
+      localStorage.setItem(STORAGE_KEYS.COUPONS, JSON.stringify(all));
+    }
+  },
+
+  // クーポンバリデーション（コード・金額・期限・利用回数チェック）
+  // 戻り値: { ok: true, coupon, discount, shippingFree } or { ok: false, error }
+  validateCoupon(code, subtotal) {
+    const c = this.getCouponByCode(code);
+    if (!c) return { ok: false, error: 'クーポンコードが見つかりません' };
+    if (!c.active) return { ok: false, error: 'このクーポンは現在ご利用いただけません' };
+    if (c.expiresAt && Date.now() > c.expiresAt) {
+      return { ok: false, error: 'このクーポンは有効期限切れです' };
+    }
+    if (c.usageLimit && c.usedCount >= c.usageLimit) {
+      return { ok: false, error: 'このクーポンは利用上限に達しています' };
+    }
+    if (c.minAmount && subtotal < c.minAmount) {
+      return { ok: false, error: `このクーポンは${Format.price(c.minAmount)}以上のご購入で利用できます` };
+    }
+    let discount = 0;
+    let shippingFree = false;
+    if (c.type === 'percent') {
+      discount = Math.floor(subtotal * c.value / 100);
+      if (c.maxDiscount && discount > c.maxDiscount) discount = c.maxDiscount;
+    } else if (c.type === 'fixed') {
+      discount = Math.min(c.value, subtotal);
+    } else if (c.type === 'shipping') {
+      shippingFree = true;
+    }
+    return { ok: true, coupon: c, discount, shippingFree };
   },
 
   // すべてリセット(デモ用)
