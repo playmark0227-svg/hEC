@@ -115,6 +115,25 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
   pointer-events: none;
 }
 .notice-bar b { color: var(--c-gold-light); font-weight: 700; }
+.notice-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+.notice-icon {
+  font-size: 14px;
+  filter: drop-shadow(0 1px 2px rgba(184,137,76,.4));
+}
+.notice-sep {
+  display: inline-block;
+  margin: 0 8px;
+  color: var(--c-gold-light);
+  opacity: .6;
+  font-size: 11px;
+  vertical-align: 1px;
+}
 
 /* ==== Header — cleaner, more confident ==== */
 .site-header {
@@ -290,10 +309,13 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
 }
 .hero-desc {
   color: var(--c-ink-2);
-  font-size: 15.5px;
-  line-height: 2.0;
+  font-size: 15px;
+  line-height: 1.95;
   margin-bottom: 36px;
-  max-width: 28em;
+  max-width: 38em;
+  word-break: keep-all;
+  line-break: strict;
+  letter-spacing: .02em;
 }
 .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
 
@@ -817,7 +839,7 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
 
 /* ==== Modal — refined ==== */
 .modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 16px; }
-.modal[hidden], .cart-drawer[hidden] { display: none !important; }
+.modal[hidden], .cart-drawer[hidden], .toast[hidden] { display: none !important; }
 .modal-backdrop {
   position: absolute; inset: 0;
   background: rgba(6, 32, 45, .55);
