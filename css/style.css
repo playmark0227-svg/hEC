@@ -1,42 +1,42 @@
 /* =====================================================
-   海市 -UMIICHI- EC サイト
-   洗練された日本の海産プレミアム — Editorial × Modern
+   海愛 -UMIAI- EC サイト
+   海から、家族への愛 — Lyrical × Editorial Japan
    ===================================================== */
 
 :root {
-  /* ---- Color Palette (Refined) ---- */
-  --c-primary:        #0d3d5c;        /* 深海ネイビー */
-  --c-primary-deep:   #082a42;
-  --c-primary-soft:   #e8f0f4;
-  --c-primary-tint:   #f4f8fa;
+  /* ---- Color Palette (海愛 — 夜の海・桜貝・月光金) ---- */
+  --c-primary:        #143a55;        /* 夜の海 — 深く温かいネイビー */
+  --c-primary-deep:   #0a2336;
+  --c-primary-soft:   #e8eff4;
+  --c-primary-tint:   #f3f7fa;
 
-  --c-accent:         #c8493d;        /* 朱赤 — 控えめな朱 */
-  --c-accent-deep:    #a3382e;
-  --c-accent-soft:    #fbeae8;
+  --c-accent:         #d88a7c;        /* 桜貝ピンク — 情感アクセント */
+  --c-accent-deep:    #b86a5d;
+  --c-accent-soft:    #fbeae4;
 
-  --c-gold:           #b8894c;        /* 金茶 — 落ち着いた金 */
-  --c-gold-light:     #d4a574;
-  --c-gold-soft:      #f7eedf;
+  --c-gold:           #c8a16b;        /* 月光金 — 柔らかい金 */
+  --c-gold-light:     #dfba87;
+  --c-gold-soft:      #f7eedb;
 
-  --c-paper:          #fbf8f3;        /* 和紙クリーム */
-  --c-paper-deep:     #f3ede2;
+  --c-paper:          #fbf6ed;        /* 真珠和紙 — 温かいクリーム */
+  --c-paper-deep:     #f1e8d6;
 
   --c-success:        #2f6f4f;
   --c-success-soft:   #e8f3ed;
   --c-warn:           #b9772a;
   --c-warn-soft:      #fbf1de;
 
-  --c-ink:            #11161c;        /* 墨 */
-  --c-ink-2:          #3a4854;
-  --c-ink-3:          #6c7a87;
-  --c-ink-4:          #9aa6b1;
+  --c-ink:            #1a232e;        /* 墨 — 微温墨 */
+  --c-ink-2:          #43505d;
+  --c-ink-3:          #74818e;
+  --c-ink-4:          #a3afba;
 
-  --c-line:           #e7ebef;
-  --c-line-2:         #f1f4f7;
-  --c-line-3:         #f7f9fb;
+  --c-line:           #ebe5d8;        /* 和紙ライン */
+  --c-line-2:         #f3eee2;
+  --c-line-3:         #f9f5ec;
 
   --c-bg:             #ffffff;
-  --c-bg-soft:        #f8fafb;
+  --c-bg-soft:        #fbf6ed;        /* 真珠和紙ベース */
   --c-bg-blue:        #eef4f7;       /* 旧互換 */
 
   /* ---- Radii ---- */
@@ -48,12 +48,13 @@
   --radius: var(--r-md);
   --radius-lg: var(--r-lg);
 
-  /* ---- Shadows (multi-layer, soft) ---- */
-  --shadow-xs:  0 1px 2px rgba(13, 61, 92, .04), 0 1px 1px rgba(13, 61, 92, .03);
-  --shadow-sm:  0 2px 4px rgba(13, 61, 92, .04), 0 4px 12px rgba(13, 61, 92, .04);
-  --shadow:     0 4px 10px rgba(13, 61, 92, .05), 0 12px 32px rgba(13, 61, 92, .06);
-  --shadow-lg:  0 8px 20px rgba(13, 61, 92, .08), 0 24px 60px rgba(13, 61, 92, .10);
-  --shadow-xl:  0 14px 40px rgba(13, 61, 92, .15), 0 30px 80px rgba(13, 61, 92, .14);
+  /* ---- Shadows (海愛 — 拡散して柔らかい) ---- */
+  --shadow-xs:  0 1px 2px rgba(20, 58, 85, .035), 0 1px 1px rgba(20, 58, 85, .025);
+  --shadow-sm:  0 2px 6px rgba(20, 58, 85, .04), 0 6px 18px rgba(20, 58, 85, .035);
+  --shadow:     0 6px 16px rgba(20, 58, 85, .055), 0 18px 48px rgba(20, 58, 85, .06);
+  --shadow-lg:  0 10px 28px rgba(20, 58, 85, .08), 0 30px 70px rgba(20, 58, 85, .09);
+  --shadow-xl:  0 18px 48px rgba(20, 58, 85, .14), 0 36px 96px rgba(20, 58, 85, .13);
+  --shadow-pearl: 0 8px 24px rgba(216, 138, 124, .14), 0 24px 60px rgba(200, 161, 107, .10);
 
   /* ---- Motion ---- */
   --ease-out: cubic-bezier(.2, .9, .3, 1);
@@ -94,15 +95,15 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
   font-feature-settings: 'tnum';
 }
 
-/* ==== Notice Bar — refined ==== */
+/* ==== Notice Bar — 海愛 ==== */
 .notice-bar {
-  background: linear-gradient(95deg, var(--c-primary-deep), var(--c-primary) 55%, #155a7a);
+  background: linear-gradient(95deg, var(--c-primary-deep), var(--c-primary) 55%, #1a4a6a);
   color: #fff;
   text-align: center;
   font-size: 12.5px;
-  padding: 9px 16px;
+  padding: 10px 16px;
   font-weight: 500;
-  letter-spacing: .05em;
+  letter-spacing: .08em;
   position: relative;
   overflow: hidden;
 }
@@ -110,8 +111,8 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
   content: '';
   position: absolute; inset: 0;
   background-image:
-    radial-gradient(circle at 12% 50%, rgba(184,137,76,.18), transparent 25%),
-    radial-gradient(circle at 88% 50%, rgba(184,137,76,.12), transparent 22%);
+    radial-gradient(circle at 12% 50%, rgba(216, 138, 124, .22), transparent 25%),
+    radial-gradient(circle at 88% 50%, rgba(200, 161, 107, .18), transparent 22%);
   pointer-events: none;
 }
 .notice-bar b { color: var(--c-gold-light); font-weight: 700; }
@@ -238,16 +239,17 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
   display: grid; place-items: center;
   padding: 0 5px;
   font-weight: 800;
-  box-shadow: 0 2px 6px rgba(200, 73, 61, .35);
+  box-shadow: 0 2px 6px rgba(216, 138, 124, .45);
   border: 1.5px solid #fff;
 }
 
-/* ==== Hero — editorial ==== */
+/* ==== Hero — 海愛 / Lyrical Editorial ==== */
 .hero {
   position: relative;
   background:
-    radial-gradient(900px 320px at 8% -10%, rgba(13, 61, 92, .07), transparent 55%),
-    radial-gradient(700px 400px at 100% 100%, rgba(184, 137, 76, .10), transparent 55%),
+    radial-gradient(1100px 380px at 12% -8%, rgba(20, 58, 85, .08), transparent 55%),
+    radial-gradient(900px 480px at 100% 100%, rgba(216, 138, 124, .14), transparent 60%),
+    radial-gradient(700px 340px at 50% 110%, rgba(200, 161, 107, .12), transparent 60%),
     linear-gradient(180deg, var(--c-paper) 0%, #ffffff 100%);
   overflow: hidden;
 }
@@ -255,17 +257,27 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
   content: '';
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 60px;
+  height: 80px;
   background: linear-gradient(180deg, transparent, var(--c-bg));
   pointer-events: none;
+}
+.hero-wave {
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  width: 100%;
+  height: 60px;
+  display: block;
+  pointer-events: none;
+  z-index: 1;
+  color: var(--c-paper);
 }
 .hero-inner {
   max-width: var(--container);
   margin: 0 auto;
-  padding: 80px 28px 100px;
+  padding: 96px 28px 120px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 72px;
   align-items: center;
   position: relative;
   z-index: 1;
@@ -274,48 +286,57 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: #fff;
-  border: 1px solid var(--c-line);
+  background: rgba(255, 255, 255, .85);
+  border: 1px solid rgba(216, 138, 124, .25);
   color: var(--c-primary);
-  padding: 8px 18px 8px 14px;
+  padding: 9px 20px 9px 15px;
   border-radius: var(--r-pill);
   font-size: 12.5px;
   font-weight: 700;
   letter-spacing: .14em;
-  margin: 0 0 26px;
+  margin: 0 0 28px;
   box-shadow: var(--shadow-xs);
+  backdrop-filter: blur(6px);
 }
 .hero-lead::before {
   content: '';
   display: inline-block;
-  width: 6px; height: 6px;
-  background: var(--c-gold);
+  width: 7px; height: 7px;
+  background: var(--c-accent);
   border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(184, 137, 76, .18);
+  box-shadow: 0 0 0 4px rgba(216, 138, 124, .22);
 }
 .hero-title {
   font-family: 'Shippori Mincho', 'Zen Maru Gothic', serif;
-  font-size: clamp(36px, 5vw, 60px);
-  line-height: 1.25;
+  font-size: clamp(36px, 4.8vw, 56px);
+  line-height: 1.4;
   color: var(--c-ink);
-  letter-spacing: -.015em;
-  margin-bottom: 28px;
-  font-weight: 700;
+  letter-spacing: .02em;
+  margin-bottom: 32px;
+  font-weight: 600;
 }
 .hero-title em {
   font-style: normal;
-  background: linear-gradient(180deg, transparent 62%, rgba(184, 137, 76, .35) 62%);
-  padding: 0 4px;
+  background: linear-gradient(180deg, transparent 64%, rgba(216, 138, 124, .38) 64%);
+  padding: 0 6px;
+}
+.hero-title .hero-title-mark {
+  display: inline-block;
+  color: var(--c-accent);
+  font-style: normal;
+  background: none;
+  padding: 0 .05em;
 }
 .hero-desc {
   color: var(--c-ink-2);
-  font-size: 15px;
-  line-height: 1.95;
-  margin-bottom: 36px;
+  font-size: 15.5px;
+  line-height: 2.05;
+  margin-bottom: 38px;
   max-width: 38em;
   word-break: keep-all;
   line-break: strict;
-  letter-spacing: .02em;
+  letter-spacing: .03em;
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
 }
 .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
 
@@ -426,10 +447,10 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
 }
 .hero-card:nth-child(odd) { transform: translateY(8px); }
 .hero-card:nth-child(odd):hover { transform: translateY(2px); }
-.hero-card-1 { background: linear-gradient(150deg, #fff8ec, #fff); }
-.hero-card-2 { background: linear-gradient(150deg, #fbe7e3, #fff); }
-.hero-card-3 { background: linear-gradient(150deg, #efe6f5, #fff); }
-.hero-card-4 { background: linear-gradient(150deg, #e6eff7, #fff); }
+.hero-card-1 { background: linear-gradient(150deg, #fbeedb, #fff); }
+.hero-card-2 { background: linear-gradient(150deg, #fbe3dc, #fff); }
+.hero-card-3 { background: linear-gradient(150deg, #ece2ee, #fff); }
+.hero-card-4 { background: linear-gradient(150deg, #e5edf3, #fff); }
 
 /* ==== Section Common ==== */
 .section-inner {
@@ -439,22 +460,34 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
 }
 .section-title {
   font-family: 'Shippori Mincho', 'Zen Maru Gothic', serif;
-  font-size: 30px;
-  margin-bottom: 8px;
-  letter-spacing: -.01em;
+  font-size: clamp(28px, 3.4vw, 38px);
+  margin-bottom: 10px;
+  letter-spacing: .01em;
   color: var(--c-ink);
-  font-weight: 700;
+  font-weight: 600;
+  line-height: 1.35;
 }
 .section-eyebrow {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   font-family: 'Noto Sans JP', sans-serif;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: .35em;
-  color: var(--c-gold);
+  letter-spacing: .42em;
+  color: var(--c-accent);
   text-transform: uppercase;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
+.section-eyebrow::before,
+.section-eyebrow::after {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--c-accent);
+  opacity: .5;
+}
+.section-eyebrow.left::after { display: none; }
+.section-eyebrow.left::before { display: none; }
 .section-head {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 36px;
@@ -708,75 +741,138 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
   opacity: .55;
 }
 
-/* ==== Story ==== */
+/* ==== Story — 海愛 ==== */
 .story {
   background:
-    radial-gradient(800px 300px at 90% 0%, rgba(184,137,76,.06), transparent 60%),
-    linear-gradient(180deg, #fff, var(--c-paper));
-  border-top: 1px solid var(--c-line);
+    radial-gradient(900px 360px at 90% 0%, rgba(216, 138, 124, .12), transparent 60%),
+    radial-gradient(700px 280px at 10% 100%, rgba(200, 161, 107, .10), transparent 60%),
+    linear-gradient(180deg, #f4ebdb, var(--c-paper) 55%);
+  position: relative;
+  overflow: hidden;
+  padding-top: 36px;
 }
-.story .section-head { justify-content: center; text-align: center; flex-direction: column; }
+.story-wave {
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  width: 100%;
+  height: 60px;
+  display: block;
+  pointer-events: none;
+  z-index: 0;
+}
+.story::before {
+  content: '海愛';
+  position: absolute;
+  right: -.08em; top: 12%;
+  font-family: 'Shippori Mincho', serif;
+  font-size: clamp(180px, 24vw, 320px);
+  font-weight: 600;
+  color: rgba(20, 58, 85, .035);
+  letter-spacing: .12em;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.story .section-head { justify-content: center; text-align: center; flex-direction: column; align-items: center; }
+.story-lead {
+  max-width: 36em;
+  margin: 0 auto 56px;
+  text-align: center;
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
+  font-size: 16px;
+  line-height: 2.1;
+  color: var(--c-ink-2);
+  letter-spacing: .04em;
+  position: relative;
+  z-index: 1;
+}
 .story-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 28px;
+  position: relative;
+  z-index: 1;
 }
 .story-card {
-  background: #fff;
-  border-radius: var(--r-lg);
-  padding: 40px 28px 32px;
+  background: rgba(255, 255, 255, .92);
+  border-radius: var(--r-xl);
+  padding: 48px 30px 36px;
   text-align: center;
   box-shadow: var(--shadow-xs);
-  transition: var(--trans);
+  transition: var(--trans-slow);
   border: 1px solid var(--c-line);
   position: relative;
   overflow: hidden;
+  backdrop-filter: blur(6px);
 }
 .story-card::before {
   content: '';
   position: absolute;
   top: 0; left: 50%;
   transform: translateX(-50%);
-  width: 60px; height: 3px;
-  background: linear-gradient(90deg, var(--c-gold), var(--c-primary));
+  width: 80px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--c-accent), transparent);
   border-radius: 0 0 3px 3px;
 }
 .story-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow);
-  border-color: var(--c-primary-soft);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-pearl);
+  border-color: rgba(216, 138, 124, .35);
 }
 .story-icon {
-  width: 76px; height: 76px;
+  width: 84px; height: 84px;
   border-radius: 50%;
   display: grid; place-items: center;
-  font-size: 38px;
-  margin: 0 auto 22px;
-  background: var(--c-paper);
-  box-shadow: inset 0 0 0 1px rgba(184, 137, 76, .18);
+  font-size: 40px;
+  margin: 0 auto 24px;
+  background: linear-gradient(180deg, #fff, var(--c-paper));
+  box-shadow:
+    inset 0 0 0 1px rgba(216, 138, 124, .22),
+    0 8px 20px rgba(216, 138, 124, .12);
+  position: relative;
+}
+.story-icon::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px dashed rgba(216, 138, 124, .28);
+  pointer-events: none;
 }
 .story-card h3 {
   font-family: 'Shippori Mincho', 'Zen Maru Gothic', serif;
-  font-size: 19px;
-  margin-bottom: 14px;
+  font-size: 21px;
+  margin-bottom: 16px;
   color: var(--c-primary);
-  font-weight: 700;
-  letter-spacing: .02em;
+  font-weight: 600;
+  letter-spacing: .04em;
 }
 .story-card p {
   color: var(--c-ink-2);
-  font-size: 13.5px;
-  line-height: 1.95;
+  font-size: 14px;
+  line-height: 2.05;
   margin: 0;
+  font-family: 'Shippori Mincho', 'Noto Sans JP', serif;
+  letter-spacing: .03em;
 }
 
-/* ==== Footer ==== */
+/* ==== Footer — 海愛 ==== */
 .site-footer {
   background:
-    radial-gradient(800px 300px at 10% 0%, rgba(184,137,76,.05), transparent 60%),
-    #06202d;
+    radial-gradient(900px 360px at 10% 0%, rgba(216, 138, 124, .08), transparent 60%),
+    radial-gradient(600px 300px at 90% 100%, rgba(200, 161, 107, .06), transparent 60%),
+    #0a1f2e;
   color: #c2cfd9;
   margin-top: 60px;
+  position: relative;
+}
+.site-footer::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: -1px;
+  height: 32px;
+  background: linear-gradient(180deg, var(--c-paper), transparent);
+  pointer-events: none;
 }
 .footer-inner {
   max-width: var(--container);

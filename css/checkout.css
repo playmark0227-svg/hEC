@@ -1,5 +1,5 @@
 /* =====================================================
-   海市 -UMIICHI- チェックアウト 専用スタイル
+   海愛 -UMIAI- チェックアウト 専用スタイル
    洗練された日本のプレミアム — Editorial × Modern
    ===================================================== */
 
@@ -604,11 +604,11 @@ body {
   min-height: 56px !important;
   font-size: 15px !important;
   padding: 0 32px !important;
-  box-shadow: 0 8px 22px rgba(200, 73, 61, .32), inset 0 1px 0 rgba(255,255,255,.18) !important;
+  box-shadow: 0 8px 22px rgba(216, 138, 124, .38), inset 0 1px 0 rgba(255,255,255,.18) !important;
 }
 .btn-confirm:hover {
-  background: linear-gradient(135deg, var(--c-accent-deep), #862c23) !important;
-  box-shadow: 0 12px 30px rgba(200, 73, 61, .4), inset 0 1px 0 rgba(255,255,255,.18) !important;
+  background: linear-gradient(135deg, var(--c-accent-deep), #9c5448) !important;
+  box-shadow: 0 12px 30px rgba(216, 138, 124, .46), inset 0 1px 0 rgba(255,255,255,.18) !important;
   transform: translateY(-1px);
 }
 .btn-confirm.loading { pointer-events: none; opacity: .8; }

@@ -14,7 +14,7 @@ const STORAGE_KEYS = {
 
 // サンプルデータのスキーマが変わった時にバージョンを上げる
 // → ユーザーのlocalStorageが古い場合は商品データのみ自動で最新化
-const DATA_VERSION = 3;
+const DATA_VERSION = 5;
 
 // カテゴリ定義
 const CATEGORIES = [
@@ -52,15 +52,16 @@ function generateProductImage(category, variant = 1, label = '') {
   <path d='M0 ${420 + variant * 10} C 150 ${380 + variant * 5}, 300 ${460 - variant * 8}, 450 ${400 + variant * 6} S 600 ${430 + variant * 4}, 600 ${430 + variant * 4} L 600 600 L 0 600 Z'
         fill='rgba(255,255,255,.22)'/>
   <path d='M0 ${480} C 150 ${440}, 300 ${520}, 450 ${470} S 600 ${490}, 600 ${490} L 600 600 L 0 600 Z'
-        fill='rgba(10,35,48,.08)'/>
+        fill='rgba(20,58,85,.08)'/>
 
   <circle cx='300' cy='260' r='150' fill='rgba(255,255,255,.4)'/>
   <circle cx='300' cy='260' r='140' fill='rgba(255,255,255,.55)' stroke='rgba(255,255,255,.8)' stroke-width='3'/>
   <text x='300' y='320' font-size='180' text-anchor='middle' font-family='Apple Color Emoji,Segoe UI Emoji,sans-serif'>${cat.emoji}</text>
 
   <g transform='translate(40, 40)'>
-    <rect x='0' y='0' rx='8' ry='8' width='120' height='30' fill='rgba(10,35,48,.85)'/>
-    <text x='60' y='20' font-size='14' text-anchor='middle' fill='#fff' font-family='system-ui,sans-serif' font-weight='700' letter-spacing='2'>UMIICHI</text>
+    <rect x='0' y='0' rx='16' ry='16' width='112' height='32' fill='rgba(20,58,85,.9)'/>
+    <circle cx='20' cy='16' r='3.5' fill='#dfba87'/>
+    <text x='64' y='21' font-size='13' text-anchor='middle' fill='#fff' font-family='system-ui,sans-serif' font-weight='700' letter-spacing='3'>UMIAI</text>
   </g>
   ${label ? `<g transform='translate(300, 540)'>
     <rect x='-140' y='-22' rx='14' ry='14' width='280' height='38' fill='rgba(255,255,255,.9)'/>
@@ -187,12 +188,12 @@ const SAMPLE_PRODUCTS = [
 ];
 
 const DEFAULT_SHOP_INFO = {
-  name: '海市 -UMIICHI-',
+  name: '海愛 -UMIAI-',
   tagline: '北の海から、食卓へ。',
   description: '北海道産直の高品質な海鮮を、新鮮なままお届けする水産加工専門のECサイトです。',
   address: '北海道紋別市XX町1-2-3',
   phone: '0158-XX-XXXX',
-  email: 'info@umiichi.example'
+  email: 'info@umiai.example'
 };
 
 // サンプルクーポン
@@ -214,7 +215,7 @@ const SAMPLE_COUPONS = [
   },
   {
     id: 'c002',
-    code: 'UMIICHI500',
+    code: 'UMIAI500',
     name: '¥500 OFF クーポン',
     type: 'fixed',
     value: 500,
