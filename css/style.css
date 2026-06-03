@@ -282,22 +282,26 @@ input, select, textarea { font-family: inherit; font-size: 15px; color: inherit;
 .wave-divider .wave-front { animation: wave-drift 13s linear infinite; }
 .wave-divider .wave-line  { animation: wave-drift 13s linear infinite; } /* same phase → rides the front crest */
 .wave-divider .wave-back  { animation: wave-drift 21s linear infinite reverse; }
-.wave-divider .wave-line path {
+/* front = solid bridge fill; line & back = thin ripple strokes (no fills crossing → no hard edges) */
+.wave-divider .wave-line path,
+.wave-divider .wave-back path {
   fill: none;
-  stroke-width: 2.5;
   vector-effect: non-scaling-stroke; /* keep stroke even despite horizontal stretch */
+  stroke-linecap: round;
 }
+.wave-divider .wave-line path { stroke-width: 2.5; }
+.wave-divider .wave-back path { stroke-width: 2; }
 
 .wave-divider-hero { bottom: -1px; z-index: 1; }
 .wave-divider-hero .wave-front path { fill: var(--c-paper); }
-.wave-divider-hero .wave-back  path { fill: rgba(200, 161, 107, .45); }
-.wave-divider-hero .wave-line  path { stroke: rgba(20, 58, 85, .20); }
+.wave-divider-hero .wave-line  path { stroke: rgba(20, 58, 85, .22); }
+.wave-divider-hero .wave-back  path { stroke: rgba(200, 161, 107, .55); }
 
 /* story: flipped vertically so it fills upward into the white product section */
 .wave-divider-story { top: -1px; z-index: 0; transform: scaleY(-1); }
 .wave-divider-story .wave-front path { fill: #ffffff; }
-.wave-divider-story .wave-back  path { fill: rgba(216, 138, 124, .42); }
 .wave-divider-story .wave-line  path { stroke: rgba(216, 138, 124, .55); }
+.wave-divider-story .wave-back  path { stroke: rgba(200, 161, 107, .50); }
 
 @keyframes wave-drift {
   from { transform: translateX(0); }
