@@ -289,12 +289,3 @@ function updateCartBadge() {
     badge.hidden = true;
   }
 }
-
-// ==== Toast ====
-function showToast(msg, duration = 2000) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.hidden = false;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.hidden = true; }, duration);
-}

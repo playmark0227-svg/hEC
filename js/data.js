@@ -508,5 +508,15 @@ const Format = {
   }
 };
 
+// 共通UIヘルパー: トースト通知（全ページ共通の #toast 要素を使用）
+function showToast(msg, duration = 2000) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.hidden = true; }, duration);
+}
+
 // 初期化
 DataStore.init();

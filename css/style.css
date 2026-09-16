@@ -33,11 +33,9 @@
 
   --c-line:           #ebe5d8;        /* 和紙ライン */
   --c-line-2:         #f3eee2;
-  --c-line-3:         #f9f5ec;
 
   --c-bg:             #ffffff;
   --c-bg-soft:        #fbf6ed;        /* 真珠和紙ベース */
-  --c-bg-blue:        #eef4f7;       /* 旧互換 */
 
   /* ---- Radii ---- */
   --r-sm: 8px;
@@ -45,8 +43,6 @@
   --r-lg: 18px;
   --r-xl: 24px;
   --r-pill: 999px;
-  --radius: var(--r-md);
-  --radius-lg: var(--r-lg);
 
   /* ---- Shadows (海愛 — 拡散して柔らかい) ---- */
   --shadow-xs:  0 1px 2px rgba(20, 58, 85, .035), 0 1px 1px rgba(20, 58, 85, .025);

@@ -674,6 +674,9 @@
   font-family: inherit;
   font-size: 14px;
   color: var(--c-ink);
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.7;
 }
 .form-body input::placeholder,
 .form-body textarea::placeholder { color: var(--c-ink-4); }
@@ -683,7 +686,6 @@
   border-color: var(--c-primary);
   box-shadow: 0 0 0 4px rgba(13, 61, 92, .08);
 }
-.form-body textarea { resize: vertical; min-height: 96px; line-height: 1.7; }
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

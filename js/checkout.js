@@ -125,7 +125,7 @@ function collectForm(form) {
 async function lookupZip() {
   const zip = document.getElementById('zipInput').value.replace(/[^\d]/g, '');
   if (zip.length !== 7) {
-    showToast('郵便番号は7桁で入力してください');
+    showToast('郵便番号は7桁で入力してください', 2200);
     return;
   }
   // デモ用：ダミー住所をセット
@@ -134,7 +134,7 @@ async function lookupZip() {
     if (!res.ok) throw new Error('検索失敗');
     const json = await res.json();
     if (!json.results || !json.results.length) {
-      showToast('該当する住所が見つかりませんでした');
+      showToast('該当する住所が見つかりませんでした', 2200);
       return;
     }
     const r = json.results[0];
@@ -142,14 +142,14 @@ async function lookupZip() {
     form.pref.value = r.address1;
     form.city.value = r.address2 + r.address3;
     form.address.focus();
-    showToast('住所を入力しました');
+    showToast('住所を入力しました', 2200);
   } catch (e) {
     // フォールバック：オフライン時
     const form = document.getElementById('shippingForm');
     form.pref.value = '北海道';
     form.city.value = '紋別市海辺町';
     form.address.focus();
-    showToast('（デモ）ダミー住所を入力しました');
+    showToast('（デモ）ダミー住所を入力しました', 2200);
   }
 }
 
@@ -595,13 +595,4 @@ function escapeHtml(s) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
-}
-
-function showToast(msg, duration = 2200) {
-  const t = document.getElementById('toast');
-  if (!t) return;
-  t.textContent = msg;
-  t.hidden = false;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.hidden = true; }, duration);
 }

@@ -698,12 +698,3 @@ function resetAll() {
   switchView('dashboard');
   showToast('🔄 初期状態にリセットしました');
 }
-
-// ==== Toast ====
-function showToast(msg, duration = 2000) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.hidden = false;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => { t.hidden = true; }, duration);
-}
